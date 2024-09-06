@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+ROOT=$(pwd)
+source $ROOT/script/_cibuild.lib
+
+begin_fold "Testing..."
+
+# Move the coveragerc file specific to the test type to .coveragerc
+# This allows us to ignore coverage for logging bits in acceptance
+if [ -f ".coveragerc.$1" ]
+then
+  cp ".coveragerc.$1" .coveragerc
+fi
+
+hatch run dev:pytest --verbose \
+--inline_errors=$CI_MODE \
+--cov-fail-under=$COV_MIN \
+test \
+-m "$1"
+
+end_fold

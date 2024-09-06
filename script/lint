@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+ROOT=$(pwd)
+source $ROOT/script/_cibuild.lib
+
+begin_fold "Linting..."
+hatch run dev:ruff check
+end_fold

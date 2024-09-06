@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+ROOT=$(pwd)
+source $ROOT/script/_cibuild.lib
+
+begin_fold "Mutation Testing..."
+
+hatch run dev:mutmut run --CI --simple-output
+
+hatch run dev:junitxml
+
+end_fold

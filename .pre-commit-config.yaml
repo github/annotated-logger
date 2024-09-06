@@ -1,0 +1,32 @@
+repos:
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
+  rev: v0.5.7
+  hooks:
+  # Run the linter.
+  - id: ruff
+  # Run the formatter.
+  - id: ruff-format
+- repo: https://github.com/RobertCraigie/pyright-python
+  rev: v1.1.355
+  hooks:
+  - id: pyright
+    # I don't love having to specify these here, but pre-commit only seems to work
+    # if you have a venv and hatch doesn't do that
+    additional_dependencies: ["makefun", "python-json-logger", "pytest", "pychoir"]
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0  # Use the ref you want to point at
+  hooks:
+  - id: trailing-whitespace
+  - id: check-merge-conflict
+  - id: check-toml
+  - id: check-yaml
+  - id: debug-statements
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.28.0
+  hooks:
+  - id: check-dependabot
+  - id: check-github-actions
+  - id: check-github-workflows

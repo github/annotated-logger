@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -x
+set -e
+
+cd "$(dirname $0)/.."
+export PIPENV_VENV_IN_PROJECT="enabled"
+if ! command -v hatch &>/dev/null; then
+    pip3 install hatch
+fi
+
+hatch env prune
+hatch env create dev

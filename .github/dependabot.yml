@@ -1,0 +1,51 @@
+---
+version: 2
+registries:
+  ghcr: # Define access for a private registry
+    type: docker-registry
+    url: ghcr.io
+    username: PAT
+    password: ${{secrets.CONTAINER_BUILDER_TOKEN}}
+updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "sunday"
+    time: "21:00"
+  commit-message:
+    prefix: "[actions] "
+    include: "scope"
+  groups:
+    dev-dependencies:
+      patterns:
+        - "*" # A wildcard that matches all dependencies in the package
+- package-ecosystem: "docker"
+  directory: "/"
+  registries:
+    - ghcr # Allow version updates for dependencies in this registry
+  schedule:
+    interval: "weekly"
+    day: "sunday"
+    time: "21:00"
+  commit-message:
+    prefix: "[docker] "
+    include: "scope"
+  groups:
+    dev-dependencies:
+      patterns:
+        - "*" # A wildcard that matches all dependencies in the package
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: "weekly"
+    day: "sunday"
+    time: "21:00"
+  commit-message:
+    prefix: "[pip] "
+    prefix-development: "[pip][dev] "
+    include: "scope"
+  groups:
+    dev-dependencies:
+      patterns:
+        - "*" # A wildcard that matches all dependencies in the package

@@ -1,0 +1,116 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "annotated-logger"
+dynamic = ["version"]
+description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
+readme = "README.md"
+license = ""
+requires-python = ">=3.6"
+authors = [
+  { name = "Vuln Mgmt Eng", email = "security+vulnmgmteng@github.com" },
+]
+keywords = [
+  "decorator",
+  "logging",
+  "annotation",
+]
+dependencies = [
+  "makefun",
+  "python-json-logger",
+  "requests",
+  # The mock makes use of this, but we really should separate the mock out into it's own package
+  # That would allow the mock to be included in dev, not in prod
+  "pychoir",
+]
+
+[project.entry-points.pytest11]
+annotated_logger = "annotated_logger.mocks"
+
+[project.urls]
+Homepage = "https://github.com/github/annotated_logger"
+
+[tool.hatch.version]
+path = "annotated_logger/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/annotated_logger",
+]
+
+[tool.hatch.env]
+requires = [
+  "hatch-pip-compile"
+]
+
+[tool.hatch.envs.default]
+type = "pip-compile"
+installer = "uv"
+pip-compile-resolver = "uv"
+
+[tool.hatch.envs.dev]
+type = "pip-compile"
+installer = "uv"
+pip-compile-resolver = "uv"
+dependencies = [
+  "coverage",
+  "mutmut",
+  "pre-commit",
+  "pyright",
+  "pytest",
+  "pytest-cov",
+  "pytest-freezer",
+  "pytest-github-actions-annotate-failures",
+  "pytest-mock",
+  "requests-mock",
+  "ruff",
+  "typing_extensions",
+]
+
+[tool.hatch.envs.dev.scripts]
+typing = "pyright"
+test = "pytest"
+lint = "ruff check"
+
+[tool.coverage.report]
+exclude_also = ["@overload"]
+fail_under = 100
+
+[tool.mutmut]
+paths_to_mutate = "annotated_logger/"
+runner = "script/mutmut_runner"
+use_coverage = true
+
+[tool.pyright]
+include = ["annotated_logger", "example", "test"]
+reportMissingTypeArgument = true
+# venvPath = "."
+# venv = ".venv"
+
+[tool.pytest.ini_options]
+# -p no:annotated_logger disables the plugin so that we can request it conftest.py
+# get coverage correctly, users will not have to do this.
+# See https://github.com/pytest-dev/pytest/issues/935
+addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger"
+filterwarnings = [
+  "error",
+]
+
+[tool.ruff]
+lint.select = ["ALL"]
+lint.ignore = [
+  "ANN101",
+  "D100", "D104",
+  # Disabled as they conflict with the formatter:
+  "W191", "E111", "E114", "E117", "D206", "D300", "Q000", "Q001", "Q002", "Q003", "COM812", "COM819", "ISC001", "ISC002",
+  # Conflicts with other rule, choosing one
+  "D203", "D213",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"test/*" = ["E501", "D10", "ANN", "S101", "PLR2004"]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true

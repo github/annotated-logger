@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+
+echo "Running Ruff"
+ruff check
+echo "Running Pytest"
+pytest -x
+echo "Running Pyright"
+pyright

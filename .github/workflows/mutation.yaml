@@ -1,0 +1,38 @@
+name: Mutation Testing
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  mutation-testing:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install hatch
+        hatch env create dev
+    - name: Run mutation testing
+      run: |
+        set -e
+        # Run pytest to get coverage so that mutmut can skip non covered lines
+        hatch run dev:pytest
+        hatch run dev:mutmut run --CI --no-progress
+        hatch run dev:mutmut results
+        hatch run dev:mutmut junitxml > junit.xml
+    - name: Parse Results
+      uses: mikepenz/action-junit-report@v4
+      if: always()
+      with:
+        report_paths: junit.xml
+        fail_on_failure: true
+        require_passed_tests: true

@@ -1,0 +1,5 @@
+--ignore-dir=.venv
+--ignore-dir=bin
+--ignore-dir=htmlcov
+--ignore-dir=log
+--ignore-dir=test/acceptance/cassettes
