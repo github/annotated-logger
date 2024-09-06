@@ -19,7 +19,7 @@ jobs:
 
       - name: Check for Changed Files
         id: changed-files
-        uses: tj-actions/changed-files@635f118699dd888d737c15018cd30aff2e0274f8
+        uses: tj-actions/changed-files@e9772d140489982e0e3704fea5ee93d536f1e275
         with:
           files: |
             annotated_logger
@@ -29,7 +29,7 @@ jobs:
 
       - name: Log into registry
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USER }}
@@ -40,7 +40,7 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
 
       - name: Setup Octofactory config
-        uses: jfrog/setup-jfrog-cli@7c95feb32008765e1b4e626b078dfd897c4340ad
+        uses: jfrog/setup-jfrog-cli@9fe0f98bd45b19e6e931d457f4e98f8f84461fb5
         if: steps.changed-files.outputs.any_changed == 'true'
         env:
           JF_ENV_1: ${{ secrets.OCTOFACTORY_SERVER_CONFIG }}
