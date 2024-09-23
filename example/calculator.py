@@ -19,7 +19,7 @@ def runtime(_record: logging.LogRecord) -> str:
     return "this function is called every time"
 
 
-annotated_logger = AnnotatedLogger(
+ann_logger = AnnotatedLogger(
     annotations={
         "extra": "new data",
         "nested_extra": {"nested_key": {"double_nested_key": "value"}},
@@ -32,10 +32,10 @@ annotated_logger = AnnotatedLogger(
         RemoverPlugin("taskName"),
         NestedRemoverPlugin(["double_nested_key"]),
     ],
-    name="annotated_logger.example",
+    name="annotated_logger.calculator",
 )
 
-annotate_logs = annotated_logger.annotate_logs
+annotate_logs = ann_logger.annotate_logs
 
 Number = int | float
 
@@ -90,7 +90,7 @@ class Calculator:
             "Prediction result", extra={"result": success != prediction}
         )
 
-    @annotated_logger.annotate_logs(
+    @ann_logger.annotate_logs(
         success_info=False,
         pre_call=check_zero_division,
         _typing_requested=True,
@@ -102,6 +102,7 @@ class Calculator:
             "If you divide by zero you'll create a singularity in the fabric of space-time!",  # noqa: E501
             extra={"joke": True},
         )
+        import pdb;pdb.set_trace()
         try:
             return self.first / self.second
         except ZeroDivisionError:

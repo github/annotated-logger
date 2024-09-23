@@ -244,8 +244,9 @@ class AnnotatedLogMock:
 
 
 @pytest.fixture()
-def annotated_logger_mock(mocker: MagicMock) -> AnnotatedLogMock:
+def annotated_logger_mock(mocker: MagicMock, annotated_logger_object: AnnotatedLogger) -> AnnotatedLogMock:
     """Fixture for a mock of the annotated logger."""
+    import pdb;pdb.set_trace()
     return mocker.patch(
         "annotated_logger.handler",
         new_callable=AnnotatedLogMock,

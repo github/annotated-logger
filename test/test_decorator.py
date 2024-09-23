@@ -4,7 +4,7 @@ from pychoir.strings import StartsWith
 import test.demo
 from annotated_logger.mocks import AnnotatedLogMock
 from example.api import ApiClient
-from example.calculator import BoomError, Calculator, annotated_logger
+from example.calculator import BoomError, Calculator, ann_logger
 from example.default import DefaultExample, var_args_and_kwargs_provided_outer
 
 
@@ -209,8 +209,8 @@ class TestAnnotatedLogger:
     def test_runtime_not_cached(self, annotated_logger_mock, mocker):
         runtime_mock = mocker.Mock(name="runtime_not_cached")
         runtime_mock.side_effect = ["first", "second", "third", "fourth"]
-        runtime_annotations = annotated_logger.runtime_annotations
-        annotated_logger.runtime_annotations = {"runtime": runtime_mock}
+        runtime_annotations = ann_logger.runtime_annotations
+        ann_logger.runtime_annotations = {"runtime": runtime_mock}
         calc = Calculator(12, 13)
         calc.subtract()
         annotated_logger_mock.assert_logged(
@@ -231,7 +231,7 @@ class TestAnnotatedLogger:
                 "runtime": "second",
             },
         )
-        annotated_logger.runtime_annotations = runtime_annotations
+        ann_logger.runtime_annotations = runtime_annotations
 
     def test_raises_type_error_with_too_few_args(self):
         calc = Calculator(12, 13)
@@ -364,7 +364,7 @@ class TestAnnotatedLogger:
             def __len__(self):
                 return 999
 
-        @annotated_logger.annotate_logs(_typing_self=False)
+        @ann_logger.annotate_logs(_typing_self=False)
         def test_me():
             return Weird()
 

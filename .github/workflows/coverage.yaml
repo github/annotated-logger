@@ -1,0 +1,35 @@
+
+name: Post Coverage Commit
+
+on: 
+workflow_run:
+  workflows: ["Pytest"]
+  types: 
+    - completed
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == "pull_request" && github.event.workflow_run.conclusion == "success"
+    permissions:
+      pull-requests: write
+      contents: write
+      actions: read
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/download-artifact@v4
+      id: download
+      with:
+        pattern: coverage-*
+        merge-multiple: true
+    - name: Re-add relative so the action is happy
+      run: |
+        echo "[run]" >> .coveragerc
+        echo "relative_files = true" >> .coveragerc
+    - name: Python Coverage Comment
+      uses: py-cov-action/python-coverage-comment-action@v3.24
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        MERGE_COVERAGE_FILES: true
+        GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}

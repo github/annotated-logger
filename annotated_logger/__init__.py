@@ -340,6 +340,7 @@ class AnnotatedLogger:
         self.formatter = formatter or JsonFormatter(
             "%(created)s %(levelname)s %(name)s %(message)s"  # pragma: no mutate
         )
+        self.handlers = [handler]
         handler.setFormatter(self.formatter)
         self.max_length = max_length
 
@@ -356,7 +357,8 @@ class AnnotatedLogger:
             f"{self.logger_root_name}.{uuid.uuid4()}"  # pragma: no mutate
         )
 
-        logger.addHandler(handler)
+        for handler_item in self.handlers:
+            logger.addHandler(handler_item)
 
         annotated_filter = self.generate_filter(function=function, cls=cls)
 
