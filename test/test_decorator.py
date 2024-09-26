@@ -1,10 +1,13 @@
+import logging
+
 import pytest
 from pychoir.strings import StartsWith
 
 import test.demo
+from annotated_logger import AnnotatedLogger
 from annotated_logger.mocks import AnnotatedLogMock
 from example.api import ApiClient
-from example.calculator import BoomError, Calculator, ann_logger
+from example.calculator import BoomError, Calculator, annotated_logger
 from example.default import DefaultExample, var_args_and_kwargs_provided_outer
 
 
@@ -209,8 +212,8 @@ class TestAnnotatedLogger:
     def test_runtime_not_cached(self, annotated_logger_mock, mocker):
         runtime_mock = mocker.Mock(name="runtime_not_cached")
         runtime_mock.side_effect = ["first", "second", "third", "fourth"]
-        runtime_annotations = ann_logger.runtime_annotations
-        ann_logger.runtime_annotations = {"runtime": runtime_mock}
+        runtime_annotations = annotated_logger.runtime_annotations
+        annotated_logger.runtime_annotations = {"runtime": runtime_mock}
         calc = Calculator(12, 13)
         calc.subtract()
         annotated_logger_mock.assert_logged(
@@ -231,7 +234,7 @@ class TestAnnotatedLogger:
                 "runtime": "second",
             },
         )
-        ann_logger.runtime_annotations = runtime_annotations
+        annotated_logger.runtime_annotations = runtime_annotations
 
     def test_raises_type_error_with_too_few_args(self):
         calc = Calculator(12, 13)
@@ -364,7 +367,7 @@ class TestAnnotatedLogger:
             def __len__(self):
                 return 999
 
-        @ann_logger.annotate_logs(_typing_self=False)
+        @annotated_logger.annotate_logs(_typing_self=False)
         def test_me():
             return Weird()
 
@@ -595,3 +598,8 @@ class TestAnnotatedLogger:
             TypeError, match="^annotated_logger must be the first argument$"
         ):
             import example.invalid_order  # noqa: F401
+
+    def test_cannot_use_both_formatter_and_config(self):
+        formatter = logging.Formatter("%(time)s %(lvl)s %(name)s %(message)s")
+        with pytest.raises(ValueError, match="Cannot pass both formatter and config."):
+            AnnotatedLogger(formatter=formatter, config={"logging": "config"})

@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
 import pychoir
 import pytest
-
-import annotated_logger
-
-if TYPE_CHECKING:  # pragma: no cover
-    from unittest.mock import MagicMock
 
 
 class AssertLogged:
@@ -165,7 +160,7 @@ class AssertLogged:
         return differences
 
 
-class AnnotatedLogMock:
+class AnnotatedLogMock(logging.Handler):
     """Mock that captures logs and provides extra assertion logic."""
 
     ALL = "ALL"
@@ -244,11 +239,19 @@ class AnnotatedLogMock:
 
 
 @pytest.fixture()
-def annotated_logger_mock(mocker: MagicMock, annotated_logger_object: AnnotatedLogger) -> AnnotatedLogMock:
+def annotated_logger_object() -> logging.Logger:
+    """Logger to wrap with the `annotated_logger_mock` fixture."""
+    return logging.getLogger("annotated_logger")
+
+
+@pytest.fixture()
+def annotated_logger_mock(annotated_logger_object: logging.Logger) -> AnnotatedLogMock:
     """Fixture for a mock of the annotated logger."""
-    import pdb;pdb.set_trace()
-    return mocker.patch(
-        "annotated_logger.handler",
-        new_callable=AnnotatedLogMock,
-        handler=annotated_logger.handler,
+    handler = annotated_logger_object.handlers[0]
+    annotated_logger_object.removeHandler(handler)
+    mock_handler = AnnotatedLogMock(
+        handler=handler,
     )
+
+    annotated_logger_object.addHandler(mock_handler)
+    return mock_handler

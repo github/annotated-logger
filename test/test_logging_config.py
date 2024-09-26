@@ -1,32 +1,30 @@
+import logging
+
+import pytest
+
 import example.logging_config
 from annotated_logger.mocks import AnnotatedLogMock
 
 
+@pytest.fixture()
+def annotated_logger_object():
+    return logging.getLogger("annotated_logger.logging_config")
+
+
 class TestLoggingConfig:
-    def test_base_logging(self, caplog):
+    @pytest.mark.parametrize(
+        "annotated_logger_object",
+        [logging.getLogger("annotated_logger.logging_config.logger")],
+    )
+    def test_base_logging(self, annotated_logger_mock):
         example.logging_config.make_some_logs()
-        for i, level in enumerate(["debug", "info", "warning", "error"]):
-            log = {
-                "annotated": True,
-                "args": (),
-                "exc_info": None,
-                "exc_text": None,
-                "extra": "new data",
-                "filename": "logging_config.py",
-                "funcName": "make_some_logs",
-                "level": level.upper(),
-                "levelno": (i + 1) * 10,
-                "message": f"this is {level}",
-                "module": "logging_config",
-                "msg": f"this is {level}",
-                "name": "demo",
-                "processName": "MainProcess",
-                "runtime": "this function is called every time",
-                "stack_info": None,
-                "threadName": "MainThread",
-            }
-            for k, v in log.items():
-                assert v == caplog.records[i].__dict__[k]
+        for level in ["debug", "info", "warning", "error"]:
+            annotated_logger_mock.assert_logged(
+                level,
+                f"this is {level}",
+                present={"hostname": "my-host"},
+                absent=["weird"],
+            )
 
     def test_annotated_logging(self, annotated_logger_mock: AnnotatedLogMock):
         example.logging_config.make_some_annotated_logs()
@@ -34,7 +32,7 @@ class TestLoggingConfig:
             "DEBUG",
             "start",
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
             },
@@ -43,12 +41,16 @@ class TestLoggingConfig:
             "DEBUG",
             "this is debug",
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
             },
         )
 
+    @pytest.mark.parametrize(
+        "annotated_logger_object",
+        [logging.getLogger("annotated_logger.logging_config_weird")],
+    )
     def test_weird_logging(self, annotated_logger_mock: AnnotatedLogMock):
         example.logging_config.make_some_weird_logs()
         annotated_logger_mock.assert_logged(
@@ -58,7 +60,9 @@ class TestLoggingConfig:
                 "weird": True,
                 "annotated": True,
             },
-            absent="extra",
+            absent="hostname",
+            # The weird logging level is info
+            count=0,
         )
         annotated_logger_mock.assert_logged(
             "INFO",
@@ -67,7 +71,7 @@ class TestLoggingConfig:
                 "weird": True,
                 "annotated": True,
             },
-            absent="extra",
+            absent="hostname",
         )
         annotated_logger_mock.assert_logged(
             "WARNING",
@@ -76,7 +80,7 @@ class TestLoggingConfig:
                 "weird": True,
                 "annotated": True,
             },
-            absent="extra",
+            absent="hostname",
         )
         annotated_logger_mock.assert_logged(
             "ERROR",
@@ -85,16 +89,20 @@ class TestLoggingConfig:
                 "weird": True,
                 "annotated": True,
             },
-            absent="extra",
+            absent="hostname",
         )
 
+    @pytest.mark.parametrize(
+        "annotated_logger_object",
+        [logging.getLogger("annotated_logger.logging_config.long")],
+    )
     def test_really_long_message(self, annotated_logger_mock: AnnotatedLogMock):
         example.logging_config.log_really_long_message()
         annotated_logger_mock.assert_logged(
             "INFO",
             "1" * 200,
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
                 "message_part": 1,
@@ -107,7 +115,7 @@ class TestLoggingConfig:
             "INFO",
             "2" * 200,
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
                 "message_part": 2,
@@ -120,7 +128,7 @@ class TestLoggingConfig:
             "INFO",
             "3333",
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
                 "message_part": 3,
@@ -133,7 +141,7 @@ class TestLoggingConfig:
             "INFO",
             "4" * 200,
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
             },
@@ -143,7 +151,7 @@ class TestLoggingConfig:
             "INFO",
             "5" * 200,
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
                 "message_part": 1,
@@ -156,7 +164,7 @@ class TestLoggingConfig:
             "INFO",
             "5",
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
                 "message_part": 2,
@@ -169,7 +177,7 @@ class TestLoggingConfig:
             "INFO",
             "6" * 199,
             present={
-                "extra": "new data",
+                "hostname": "my-host",
                 "annotated": True,
                 "runtime": "this function is called every time",
             },

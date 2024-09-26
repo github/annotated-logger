@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "annotated-logger"
 dynamic = ["version"]
 description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
-readme = "README.md"
+readme = "REadme.md"
 license = ""
 requires-python = ">=3.6"
 authors = [
@@ -93,7 +93,9 @@ reportMissingTypeArgument = true
 # -p no:annotated_logger disables the plugin so that we can request it conftest.py
 # get coverage correctly, users will not have to do this.
 # See https://github.com/pytest-dev/pytest/issues/935
-addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger"
+# --forked will run each test in it's own process, which prevents the logging configs
+# from overriding eachother and clobbering the handlers and the like
+addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger --forked"
 filterwarnings = [
   "error",
 ]

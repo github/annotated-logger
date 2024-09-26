@@ -43,15 +43,22 @@ class RequestsPlugin(BasePlugin):
 class RenamerPlugin(BasePlugin):
     """Plugin that prevents name collisions."""
 
-    def __init__(self, **kwargs: str) -> None:
+    class FieldNotPresentError(Exception):
+        """Exception for a field that is supposed to be renamed, but is not present."""
+
+    def __init__(self, *, strict: bool = False, **kwargs: str) -> None:
         """Store the list of names to rename and pre/post fixs."""
         self.targets = kwargs
+        self.strict = strict
 
     def filter(self, record: logging.LogRecord) -> bool:
-        """Adjust the name of any fields that match a provided list."""
+        """Adjust the name of any fields that match a provided list if they exist."""
         for new, old in self.targets.items():
-            record.__dict__[new] = record.__dict__[old]
-            del record.__dict__[old]
+            if old in record.__dict__:
+                record.__dict__[new] = record.__dict__[old]
+                del record.__dict__[old]
+            elif self.strict:
+                raise RenamerPlugin.FieldNotPresentError(old)
         return True
 
 

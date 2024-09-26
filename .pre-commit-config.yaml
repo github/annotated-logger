@@ -8,7 +8,7 @@ repos:
   # Run the formatter.
   - id: ruff-format
 - repo: https://github.com/RobertCraigie/pyright-python
-  rev: v1.1.355
+  rev: v1.1.382
   hooks:
   - id: pyright
     # I don't love having to specify these here, but pre-commit only seems to work

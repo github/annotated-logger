@@ -4,7 +4,7 @@ import pytest
 from requests.exceptions import HTTPError
 
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
-from annotated_logger.plugins import BasePlugin
+from annotated_logger.plugins import BasePlugin, RenamerPlugin
 from example.api import ApiClient
 from example.calculator import Calculator
 
@@ -40,6 +40,11 @@ class SpyPlugin(BasePlugin):
 def annotated_logger(plugins):
     return AnnotatedLogger(
         plugins=plugins,
+        name="annotated_logger.test_plugins",
+        # I believe that allowing this to set config leads to duplicate
+        # filters/handlers that re-written on each dictConfig call,
+        # but aren't overwritten, just hidden/dereferences, but still called
+        config=False,
     )
 
 
@@ -68,6 +73,13 @@ def skip_plugin():
     return SpyPlugin(filter_message=True)
 
 
+# Request the annotated_logger fixture so that the config
+# has been setup before we get the logger
+@pytest.fixture()
+def annotated_logger_object(annotated_logger):  # noqa: ARG001
+    return logging.getLogger("annotated_logger")
+
+
 class TestPlugins:
     class TestSkip:
         @pytest.fixture()
@@ -90,7 +102,9 @@ class TestPlugins:
         def plugins(self, working_plugin):
             return [working_plugin]
 
-        def test_working_filter(self, annotate_logs, working_plugin):
+        def test_working_filter(
+            self, annotated_logger_mock, annotate_logs, working_plugin
+        ):
             @annotate_logs()
             def should_work():
                 return True
@@ -99,6 +113,7 @@ class TestPlugins:
             assert working_plugin.filter_called is False
             should_work()
             assert working_plugin.filter_called is True
+            annotated_logger_mock.assert_logged("info", "success")
 
         def test_working_exception(self, annotate_logs, working_plugin):
             @annotate_logs()
@@ -176,6 +191,34 @@ class TestRenamerPlugin:
             present={"cheezy_joke": True},
             absent=["joke"],
         )
+
+    def test_field_missing_strict(self, annotated_logger_mock):
+        annotate_logs = AnnotatedLogger(
+            plugins=[RenamerPlugin(strict=True, made_up_field="some_other_field")],
+            name="annotated_logger.test_plugins",
+            config=False,
+        ).annotate_logs
+
+        wrapped = annotate_logs(_typing_self=False)(lambda: True)
+        wrapped()
+
+        assert annotated_logger_mock.records[0].failed_plugins == [
+            "<class 'annotated_logger.plugins.RenamerPlugin'>"
+        ]
+
+    def test_field_missing_not_strict(self, annotated_logger_mock):
+        annotate_logs = AnnotatedLogger(
+            plugins=[RenamerPlugin(strict=False, made_up_field="some_other_field")],
+            name="annotated_logger.test_plugins",
+            config=False,
+        ).annotate_logs
+
+        wrapped = annotate_logs(_typing_self=False)(lambda: True)
+        wrapped()
+
+        record = annotated_logger_mock.records[0]
+        with pytest.raises(AttributeError):
+            _ = record.failed_plugins
 
 
 class TestNestedRemoverPlugin:
