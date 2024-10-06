@@ -19,7 +19,7 @@
 # - requests
 #
 
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 cfgv==3.4.0
     # via pre-commit
@@ -27,31 +27,31 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via mutmut
-coverage==7.5.4
+coverage==7.6.1
     # via
     #   hatch.envs.dev
     #   pytest-cov
 distlib==0.3.8
     # via virtualenv
-exceptiongroup==1.2.1
+exceptiongroup==1.2.2
     # via pytest
-filelock==3.15.4
+filelock==3.16.1
     # via virtualenv
 freezegun==1.5.1
     # via pytest-freezer
 glob2==0.7
     # via mutmut
-identify==2.5.36
+identify==2.6.1
     # via pre-commit
-idna==3.7
+idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
 junit-xml==1.9
     # via mutmut
-makefun==1.15.2
+makefun==1.15.6
     # via hatch.envs.dev
-mutmut==2.5.0
+mutmut==2.5.1
     # via hatch.envs.dev
 nodeenv==1.9.1
     # via
@@ -61,19 +61,19 @@ packaging==24.1
     # via pytest
 parso==0.8.4
     # via mutmut
-platformdirs==4.2.2
+platformdirs==4.3.6
     # via virtualenv
 pluggy==1.5.0
     # via pytest
-pony==0.7.17
+pony==0.7.19
     # via mutmut
-pre-commit==3.7.1
+pre-commit==4.0.0
     # via hatch.envs.dev
 pychoir==0.0.27
     # via hatch.envs.dev
-pyright==1.1.376
+pyright==1.1.383
     # via hatch.envs.dev
-pytest==8.2.2
+pytest==8.3.3
     # via
     #   hatch.envs.dev
     #   pytest-cov
@@ -92,7 +92,7 @@ python-dateutil==2.9.0.post0
     # via freezegun
 python-json-logger==2.0.7
     # via hatch.envs.dev
-pyyaml==6.0.1
+pyyaml==6.0.2
     # via pre-commit
 requests==2.32.3
     # via
@@ -100,7 +100,7 @@ requests==2.32.3
     #   requests-mock
 requests-mock==1.12.1
     # via hatch.envs.dev
-ruff==0.5.7
+ruff==0.6.9
     # via hatch.envs.dev
 six==1.16.0
     # via
@@ -108,13 +108,13 @@ six==1.16.0
     #   python-dateutil
 toml==0.10.2
     # via mutmut
-tomli==2.0.1
+tomli==2.0.2
     # via
     #   coverage
     #   pytest
 typing-extensions==4.12.2
     # via hatch.envs.dev
-urllib3==2.2.2
+urllib3==2.2.3
     # via requests
-virtualenv==20.26.3
+virtualenv==20.26.6
     # via pre-commit
