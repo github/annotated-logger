@@ -208,7 +208,7 @@ class TestRenamerPlugin:
 
     def test_field_missing_not_strict(self, annotated_logger_mock):
         annotate_logs = AnnotatedLogger(
-            plugins=[RenamerPlugin(strict=False, made_up_field="some_other_field")],
+            plugins=[RenamerPlugin(made_up_field="some_other_field")],
             name="annotated_logger.test_plugins",
             config=False,
         ).annotate_logs
@@ -217,7 +217,9 @@ class TestRenamerPlugin:
         wrapped()
 
         record = annotated_logger_mock.records[0]
-        with pytest.raises(AttributeError):
+        with pytest.raises(
+            AttributeError, match="'LogRecord' object has no attribute 'failed_plugins'"
+        ):
             _ = record.failed_plugins
 
 
