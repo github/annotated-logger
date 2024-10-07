@@ -16,7 +16,7 @@ jobs:
         # of logging configs as logging.dictConfig has a setting to not disable old loggers
         # but, does seem to trample old handlers, filters and formatters
         os: [ubuntu-latest, macos-latest]
-        python-version: ["3.9", "3.10", "3.11", "pypy3.9", "pypy3.10"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "pypy3.9", "pypy3.10"]
         exclude:
           - os: macos-latest
             python-version: "3.9"
