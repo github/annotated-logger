@@ -22,8 +22,12 @@ class TestLoggingConfig:
             annotated_logger_mock.assert_logged(
                 level,
                 f"this is {level}",
-                present={"decorated": False},
-                absent=["weird"],
+                present={
+                    "decorated": False,
+                    "config_based_filter": True,
+                    "class_based_filter": True,
+                },
+                absent=["weird", "hostname"],
             )
 
     def test_annotated_logging(self, annotated_logger_mock: AnnotatedLogMock):

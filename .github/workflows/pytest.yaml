@@ -12,7 +12,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # pytest-forked does not work on windows and we currently use it for isolation
+        # of logging configs as logging.dictConfig has a setting to not disable old loggers
+        # but, does seem to trample old handlers, filters and formatters
+        os: [ubuntu-latest, macos-latest]
         python-version: ["3.9", "3.10", "3.11", "pypy3.9", "pypy3.10"]
         exclude:
           - os: macos-latest

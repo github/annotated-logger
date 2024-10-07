@@ -40,11 +40,11 @@ LOGGING = {
             # But, if you want to do that you are likely better off
             # using a filter not associated with an AnnotatedLogger
             # like the `logging_config.logger_filter_parens` below
-            "annotations": {"decorated": False},
+            "annotations": {"config_based_filter": True},
         },
         "logging_config.logger_filter_parens": {
             "()": AnnotatedFilter,
-            "annotations": {"decorated": False},
+            "annotations": {"decorated": False, "class_based_filter": True},
             "class_annotations": {},
             "runtime_annotations": {"custom_runtime": lambda _record: True},
             "plugins": [BasePlugin()],
@@ -80,10 +80,9 @@ LOGGING = {
     "formatters": {
         "logging_config.annotated_formatter": {
             "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            # Note that this format string uses `time` and `level` which are
-            # set by the renamer plugin. Because the handler is using the
-            # annotated_filter the plugings will be run and the fields will be renamed
-            # This also pulls the `runtime` annotation to a specific place in the log
+            # Note that this format string uses `time` which is set by the renamer
+            # plugin. It also has `lvl` which is there strictly to test our fallback
+            # to using `levelno` in the mocks to determine level.
             "format": "{time} {lvl} {name} {runtime} {message}",
             "style": "{",
         },
@@ -92,7 +91,7 @@ LOGGING = {
             "style": "{",
         },
         "logging_config.long_formatter": {
-            "format": "{level} Long message, may be split {message}",
+            "format": "{lvl} Long message, may be split {message}",
             # 3.12 added support for defaults in dict configs
             # With that we can add the format and defaults below
             # for a more realistic example. Not all of the messages
@@ -143,7 +142,7 @@ def runtime(_record: logging.LogRecord) -> str:
 annotated_logger = AnnotatedLogger(
     annotations={"hostname": "my-host"},
     runtime_annotations={"runtime": runtime},
-    plugins=[RenamerPlugin(time="created", level="levelname")],
+    plugins=[RenamerPlugin(time="created", lvl="levelname")],
     log_level=logging.DEBUG,
     max_length=200,
     name="annotated_logger.logging_config",

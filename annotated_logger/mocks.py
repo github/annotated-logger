@@ -106,18 +106,14 @@ class AssertLogged:
         record: logging.LogRecord,
     ) -> list[str]:
         differences = []
-        if "levelname" in record.__dict__:
-            level = record.levelname
-        elif "level" in record.__dict__:
-            level = record.level  # pyright: ignore[reportAttributeAccessIssue]
-        # If you have removed levelname and levelno and didn't add level... good luck
-        else:
-            level = {
-                logging.DEBUG: "DEBUG",
-                logging.INFO: "INFO",
-                logging.WARNING: "WARNING",
-                logging.ERROR: "ERROR",
-            }[record.levelno]
+        # `levelname` is often renamed. But, `levelno` shouldn't be touched as often
+        # So, don't try to guess what the level name is, just use the levelno.
+        level = {
+            logging.DEBUG: "DEBUG",
+            logging.INFO: "INFO",
+            logging.WARNING: "WARNING",
+            logging.ERROR: "ERROR",
+        }[record.levelno]
         actual = {
             "level": level,
             "msg": record.msg,

@@ -87,12 +87,12 @@ Decorator = (
 Annotations = dict[str, Any]
 
 
-DEFAULT_LOGGING_CONFIG = {  # pragma: no mutate
+DEFAULT_LOGGING_CONFIG = {
     "version": 1,
-    "disable_existing_loggers": False,
+    "disable_existing_loggers": False,  # pragma: no mutate
     "filters": {
         "annotated_filter": {
-            "annotated_filter": True,
+            "annotated_filter": True,  # pragma: no mutate
         }
     },
     "handlers": {
@@ -104,11 +104,11 @@ DEFAULT_LOGGING_CONFIG = {  # pragma: no mutate
     },
     "formatters": {
         "annotated_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",  # pragma: no mutate
             # Note that this format string uses `time` and `level` which are
             # set by the renamer plugin. Because the handler is using the
             # annotated_filter the plugings will be run and the fields will be renamed
-            "format": "{created} {levelname} {name} {message}",
+            "format": "{created} {levelname} {name} {message}",  # pragma: no mutate
             "style": "{",
         },
     },
@@ -116,7 +116,7 @@ DEFAULT_LOGGING_CONFIG = {  # pragma: no mutate
         "annotated_logger": {
             "level": "DEBUG",
             "handlers": ["annotated_handler"],
-            "propagate": False,
+            "propagate": False,  # pragma: no mutate
         },
     },
 }
@@ -337,7 +337,6 @@ class AnnotatedLogger:
         log_level: int = logging.INFO,
         name: str = "annotated_logger",
         config: dict[str, Any] | Literal[False] | None = None,
-        # TODO: boolean for correlation_id and then auto generate it
     ) -> None:
         """Store the settings.
 
