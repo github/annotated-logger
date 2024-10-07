@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "annotated-logger"
 dynamic = ["version"]
 description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
-readme = "Readme.md"
+readme = "README.md"
 license = ""
 requires-python = ">=3.6"
 authors = [
