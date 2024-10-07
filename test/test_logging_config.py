@@ -22,7 +22,7 @@ class TestLoggingConfig:
             annotated_logger_mock.assert_logged(
                 level,
                 f"this is {level}",
-                present={"hostname": "my-host"},
+                present={"decorated": False},
                 absent=["weird"],
             )
 

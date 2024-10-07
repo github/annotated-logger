@@ -40,7 +40,7 @@ LOGGING = {
             # But, if you want to do that you are likely better off
             # using a filter not associated with an AnnotatedLogger
             # like the `logging_config.logger_filter_parens` below
-            #  "annotations": {"decorated": False},  # noqa: ERA001
+            "annotations": {"decorated": False},
         },
         "logging_config.logger_filter_parens": {
             "()": AnnotatedFilter,
@@ -84,7 +84,7 @@ LOGGING = {
             # set by the renamer plugin. Because the handler is using the
             # annotated_filter the plugings will be run and the fields will be renamed
             # This also pulls the `runtime` annotation to a specific place in the log
-            "format": "{time} {level} {name} {runtime} {message}",
+            "format": "{time} {lvl} {name} {runtime} {message}",
             "style": "{",
         },
         "logging_config.error_formatter": {

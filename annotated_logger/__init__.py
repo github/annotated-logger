@@ -87,7 +87,7 @@ Decorator = (
 Annotations = dict[str, Any]
 
 
-DEFAULT_LOGGING_CONFIG = {
+DEFAULT_LOGGING_CONFIG = {  # pragma: no mutate
     "version": 1,
     "disable_existing_loggers": False,
     "filters": {
@@ -337,6 +337,7 @@ class AnnotatedLogger:
         log_level: int = logging.INFO,
         name: str = "annotated_logger",
         config: dict[str, Any] | Literal[False] | None = None,
+        # TODO: boolean for correlation_id and then auto generate it
     ) -> None:
         """Store the settings.
 
