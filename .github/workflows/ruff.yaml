@@ -19,4 +19,4 @@ jobs:
         hatch env create dev
     - name: Lint with Ruff
       run: |
-        hatch run dev:ruff --output-format=github .
+        hatch run dev:ruff check --output-format=github .
