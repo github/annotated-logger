@@ -26,6 +26,7 @@ class TestLoggingConfig:
                     "decorated": False,
                     "config_based_filter": True,
                     "class_based_filter": True,
+                    "lvl": level.upper(),
                 },
                 absent=["weird", "hostname"],
             )
