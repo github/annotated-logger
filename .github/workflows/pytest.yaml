@@ -45,6 +45,7 @@ jobs:
       with:
         name: coverage-${{ matrix.os }}-${{ matrix.python-version }}
         path: .coverage.${{ matrix.os }}.${{ matrix.python-version }}
+        include-hidden-files: true
 
   coverage:
     runs-on: ubuntu-latest
