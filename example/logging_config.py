@@ -30,6 +30,8 @@ from annotated_logger.plugins import BasePlugin, RenamerPlugin
 # Note: When creating multiple loggers, especially when doing so in different
 # files/configs keep in mind that names should be unique or they will override
 # eachother leaving you with a very confusing mess.
+# If you want to see how to more easily merge settings into the default logging
+# dict this package uses see the `actions.py` example.
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
