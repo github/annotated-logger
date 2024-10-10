@@ -7,10 +7,10 @@
 # - pyright
 # - pytest
 # - pytest-cov
-# - pytest-forked
 # - pytest-freezer
 # - pytest-github-actions-annotate-failures
 # - pytest-mock
+# - pytest-randomly
 # - requests-mock
 # - ruff
 # - typing_extensions
@@ -70,8 +70,6 @@ pony==0.7.17
     # via mutmut
 pre-commit==3.7.1
     # via hatch.envs.dev
-py==1.11.0
-    # via pytest-forked
 pychoir==0.0.27
     # via hatch.envs.dev
 pyright==1.1.376
@@ -80,19 +78,19 @@ pytest==8.2.2
     # via
     #   hatch.envs.dev
     #   pytest-cov
-    #   pytest-forked
     #   pytest-freezer
     #   pytest-github-actions-annotate-failures
     #   pytest-mock
+    #   pytest-randomly
 pytest-cov==5.0.0
-    # via hatch.envs.dev
-pytest-forked==1.6.0
     # via hatch.envs.dev
 pytest-freezer==0.4.8
     # via hatch.envs.dev
 pytest-github-actions-annotate-failures==0.2.0
     # via hatch.envs.dev
 pytest-mock==3.14.0
+    # via hatch.envs.dev
+pytest-randomly==3.15.0
     # via hatch.envs.dev
 python-dateutil==2.9.0.post0
     # via freezegun

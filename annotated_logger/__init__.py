@@ -23,6 +23,7 @@ from typing import (
 
 from makefun import wraps
 
+from annotated_logger.filter import AnnotatedFilter
 from annotated_logger.plugins import BasePlugin
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -98,16 +99,12 @@ DEFAULT_LOGGING_CONFIG = {
     "handlers": {
         "annotated_handler": {
             "class": "logging.StreamHandler",
-            "filters": ["annotated_filter"],
             "formatter": "annotated_formatter",
         },
     },
     "formatters": {
         "annotated_formatter": {
             "class": "pythonjsonlogger.jsonlogger.JsonFormatter",  # pragma: no mutate
-            # Note that this format string uses `time` and `level` which are
-            # set by the renamer plugin. Because the handler is using the
-            # annotated_filter the plugings will be run and the fields will be renamed
             "format": "{created} {levelname} {name} {message}",  # pragma: no mutate
             "style": "{",
         },
@@ -165,61 +162,6 @@ class AnnotatedIterator(Iterator[T]):
 
         self.log_method("next", extra=self.extras)
         return value
-
-
-class AnnotatedFilter(logging.Filter):
-    """Filter class that stores the annotations and plugins."""
-
-    def __init__(
-        self,
-        annotations: Annotations,
-        runtime_annotations: Annotations,
-        class_annotations: Annotations,
-        plugins: list[BasePlugin],
-    ) -> None:
-        """Store the annotations, attributes and plugins."""
-        self.annotations = annotations
-        self.class_annotations = class_annotations
-        self.runtime_annotations = runtime_annotations or {}
-        self.plugins = plugins
-
-        # This allows plugins to determine what fields were added by the user
-        # vs the ones native to the log record
-        # TODO(crimsonknave): Make a test for this # noqa: TD003, FIX002
-        self.base_attributes = logging.makeLogRecord({}).__dict__  # pragma: no mutate
-
-    def _all_annotations(self, record: logging.LogRecord) -> Annotations:
-        annotations = {}
-        # Using copy might be better, but, we don't want to add
-        # the runtime annotations to the stored annotations
-        annotations.update(self.class_annotations)
-        annotations.update(self.annotations)
-        for key, function in self.runtime_annotations.items():
-            annotations[key] = function(record)
-        annotations["annotated"] = True
-        return annotations
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        """Add the annotations to the record and allow plugins to filter the record.
-
-        The `filter` method is called on each plugin in the order they are listed.
-        The plugin is then able to maniuplate the record object before the next plugin
-        sees it. Returning False from the filter method will stop the evaluation and
-        the log record won't be emitted.
-        """
-        record.__dict__.update(self._all_annotations(record))
-        for plugin in self.plugins:
-            try:
-                result = plugin.filter(record)
-            except Exception:  # noqa: BLE001
-                failed_plugins = record.__dict__.get("failed_plugins", [])
-                failed_plugins.append(str(plugin.__class__))
-                record.__dict__["failed_plugins"] = failed_plugins
-                result = True
-
-            if not result:
-                return False
-        return True
 
 
 class AnnotatedAdapter(logging.LoggerAdapter):  # pyright: ignore[reportMissingTypeArgument]

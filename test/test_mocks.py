@@ -1,4 +1,6 @@
-from example.calculator import Calculator
+import pytest
+
+import example.calculator
 from example.default import DefaultExample
 
 
@@ -81,9 +83,10 @@ Below is a list of the values for the selected extras for those failed matches.
     )
 
 
+@pytest.mark.usefixtures("_reload_calculator")
 class TestAnnotatedLogMock:
     def test_assert_logged_message_pass(self, annotated_logger_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         annotated_logger_mock.assert_logged("debug", "start")
         annotated_logger_mock.assert_logged(
@@ -97,7 +100,7 @@ class TestAnnotatedLogMock:
         annotated_logger_mock.assert_logged("debug", "success")
 
     def test_assert_logged_present_pass(self, annotated_logger_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         annotated_logger_mock.assert_logged("debug", "start", {"extra": "new data"})
         annotated_logger_mock.assert_logged(
@@ -115,7 +118,7 @@ class TestAnnotatedLogMock:
         )
 
     def test_assert_logged_absent_pass(self, annotated_logger_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         annotated_logger_mock.assert_logged(
             "debug", "start", absent=["first", "second", "other", "foo", "unused"]
@@ -135,7 +138,7 @@ class TestAnnotatedLogMock:
         )
 
     def test_assert_logged_present_and_absent_pass(self, annotated_logger_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         annotated_logger_mock.assert_logged(
             "debug",
@@ -177,7 +180,7 @@ Absent: 'set()'
         )
 
     def test_assert_logged_message_wrong(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         annotated_logger_mock.assert_logged("debug", "wrong: start")
         annotated_logger_mock.assert_logged(
@@ -205,7 +208,7 @@ Absent: 'set()'
             assert fail_mock.mock_calls[i].args[0] == errors[i]
 
     def test_assert_logged_present_wrong(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
         present_values = [
             {"wrong": "key", "also wrong": "missing"},
@@ -245,7 +248,7 @@ Absent: 'set()'
         )
 
     def test_all_absent_fail(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
 
         message = "This message will have 'other' as well as 'first' from the annotation above."
@@ -274,7 +277,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_absent_fail(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.add()
 
         message = "This message will have 'other' as well as 'first' from the annotation above."
@@ -303,7 +306,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_count_correct(self, annotated_logger_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.factorial(5)
 
         annotated_logger_mock.assert_logged(
@@ -313,7 +316,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_count_wrong(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.factorial(5)
 
         annotated_logger_mock.assert_logged(
@@ -328,7 +331,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_count_wrong_message(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.factorial(5)
 
         annotated_logger_mock.assert_logged(
@@ -358,7 +361,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_count_wrong_message_and_count(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.factorial(5)
 
         annotated_logger_mock.assert_logged(
@@ -388,7 +391,7 @@ Below is a list of the values for the selected extras for those failed matches.
         )
 
     def test_count_wrong_present(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(1, 2)
+        calc = example.calculator.Calculator(1, 2)
         calc.factorial(5)
 
         annotated_logger_mock.assert_logged(
@@ -421,12 +424,12 @@ Below is a list of the values for the selected extras for those failed matches.
 
     def test_count_zero_correct(self, annotated_logger_mock):
         annotated_logger_mock.assert_logged("info", "nope", count=0)
-        calc = Calculator(7, 2)
+        calc = example.calculator.Calculator(7, 2)
         calc.factorial(5)
         annotated_logger_mock.assert_logged("info", "nope", count=0)
 
     def test_count_zero_wrong(self, annotated_logger_mock, fail_mock):
-        calc = Calculator(7, 2)
+        calc = example.calculator.Calculator(7, 2)
         calc.factorial(5)
         annotated_logger_mock.assert_logged("info", "success", count=0)
         assert (
@@ -436,13 +439,13 @@ Below is a list of the values for the selected extras for those failed matches.
 
     def test_count_zero_any_message(self, annotated_logger_mock):
         annotated_logger_mock.assert_logged("info", count=0)
-        calc = Calculator(7, 2)
+        calc = example.calculator.Calculator(7, 2)
         calc.factorial(5)
         annotated_logger_mock.assert_logged("warning", count=0)
 
     def test_count_zero_any_level(self, annotated_logger_mock, fail_mock):
         annotated_logger_mock.assert_logged(count=0)
-        calc = Calculator(7, 2)
+        calc = example.calculator.Calculator(7, 2)
         calc.factorial(5)
         annotated_logger_mock.assert_logged(count=0)
         assert (

@@ -5,6 +5,7 @@ from requests.exceptions import HTTPError
 
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
 from annotated_logger.plugins import BasePlugin, RenamerPlugin
+from example.actions import ActionsExample
 from example.api import ApiClient
 from example.calculator import Calculator
 
@@ -233,3 +234,14 @@ class TestNestedRemoverPlugin:
             present={"nested_extra": {"nested_key": {}}},
             count=1,
         )
+
+
+class TestGitHubActionsPlugin:
+    def test_logs_normally(self, annotated_logger_mock):
+        action = ActionsExample()
+        action.first_step()
+
+        annotated_logger_mock.assert_logged("info", "Step 1 running!")
+
+    def test_logs_actions_annotations(self, annotated_logger_mock, caplog):
+        pass

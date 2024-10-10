@@ -61,10 +61,10 @@ dependencies = [
   "pyright",
   "pytest",
   "pytest-cov",
-  "pytest-forked",
   "pytest-freezer",
   "pytest-github-actions-annotate-failures",
   "pytest-mock",
+  "pytest-randomly",
   "requests-mock",
   "ruff",
   "typing_extensions",
@@ -92,11 +92,9 @@ reportMissingTypeArgument = true
 
 [tool.pytest.ini_options]
 # -p no:annotated_logger disables the plugin so that we can request it conftest.py
-# get coverage correctly, users will not have to do this.
+# to get coverage correctly, users will not have to do this.
 # See https://github.com/pytest-dev/pytest/issues/935
-# --forked will run each test in it's own process, which prevents the logging configs
-# from overriding eachother and clobbering the handlers and the like
-addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger --forked"
+addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger"
 filterwarnings = [
   "error",
 ]

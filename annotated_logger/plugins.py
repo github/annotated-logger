@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 from typing import TYPE_CHECKING
 
 from requests.exceptions import HTTPError
 
-if TYPE_CHECKING:  # pragma: no cover
-    import logging
+from annotated_logger.filter import AnnotatedFilter
 
+if TYPE_CHECKING:  # pragma: no cover
     from annotated_logger import AnnotatedAdapter
 
 
@@ -122,3 +123,68 @@ class NestedRemoverPlugin(BasePlugin):
 
         record.__dict__ = delete_keys_nested(record.__dict__, self.keys_to_remove)
         return True
+
+
+class GitHubActionsPlugin(BasePlugin):
+    """Plugin that will format log messages for actions annotations."""
+
+    def __init__(self, annotation_level: int) -> None:
+        """Save the annotation level."""
+        self.annotation_level = annotation_level
+        self.base_attributes = logging.makeLogRecord({}).__dict__  # pragma: no mutate
+        self.attributes_to_exclude = {"annotated"}
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """Set the actions command to be an annotation if desired."""
+        if record.levelno < self.annotation_level:
+            return False
+
+        added_attributes = {
+            k: v
+            for k, v in record.__dict__.items()
+            if k not in self.base_attributes and k not in self.attributes_to_exclude
+        }
+        record.__dict__["added_attributes"] = added_attributes
+        name = record.levelname.lower()
+        if name == "info":  # pragma: no cover
+            name = "notice"
+        record.__dict__["github_annotation"] = f"{name}::"
+
+        return True
+
+    def logging_config(self) -> dict[str, dict[str, object]]:
+        """Generate the default logging config for the plugin."""
+        return {
+            "handlers": {
+                "actions_handler": {
+                    "class": "logging.StreamHandler",
+                    "filters": ["actions_filter"],
+                    "formatter": "actions_formatter",
+                },
+            },
+            "filters": {
+                "actions_filter": {
+                    "()": AnnotatedFilter,
+                    "plugins": [
+                        BasePlugin(),
+                        self,
+                    ],
+                },
+            },
+            "formatters": {
+                "actions_formatter": {
+                    "format": "{github_annotation} {message} - {added_attributes}",
+                    "style": "{",
+                },
+            },
+            "loggers": {
+                "annotated_logger.actions": {
+                    "level": "DEBUG",
+                    "handlers": [
+                        # This is from the default logging config
+                        "annotated_handler",
+                        "actions_handler",
+                    ],
+                },
+            },
+        }

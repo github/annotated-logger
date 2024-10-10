@@ -11,6 +11,7 @@ def annotated_logger_object():
     return logging.getLogger("annotated_logger.logging_config")
 
 
+@pytest.mark.usefixtures("_reload_logging_config")
 class TestLoggingConfig:
     @pytest.mark.parametrize(
         "annotated_logger_object",
