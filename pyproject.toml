@@ -7,7 +7,7 @@ name = "annotated-logger"
 dynamic = ["version"]
 description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
 readme = "README.md"
-license = ""
+license = "MIT"
 requires-python = ">=3.6"
 authors = [
   { name = "Vuln Mgmt Eng", email = "security+vulnmgmteng@github.com" },
