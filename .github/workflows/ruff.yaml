@@ -5,6 +5,8 @@ on:
 
 jobs:
   ruff:
+    permissions:
+      contents: read
 
     runs-on: ubuntu-latest
     steps:

@@ -8,6 +8,8 @@ on:
 
 jobs:
   pytest:
+    permissions:
+      contents: read
 
     runs-on: ${{ matrix.os }}
     strategy:
