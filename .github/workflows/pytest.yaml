@@ -40,7 +40,6 @@ jobs:
         # Need relative files for the action to report, but it messes up mutmut
         echo "[run]" >> .coveragerc
         echo "relative_files = true" >> .coveragerc
-        cat .coveragerc
 
         hatch run dev:pytest
       env:
@@ -66,6 +65,11 @@ jobs:
       with:
         pattern: coverage-*
         merge-multiple: true
+    - name: Re-add relative so the action is happy
+      run: |
+        # Need relative files for the action to report, but it messes up mutmut
+        echo "[run]" >> .coveragerc
+        echo "relative_files = true" >> .coveragerc
     - name: Python Coverage Comment
       uses: py-cov-action/python-coverage-comment-action@b2eb38dd175bf053189b35f738f9207278b00925
       with:
