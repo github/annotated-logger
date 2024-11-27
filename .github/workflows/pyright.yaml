@@ -21,4 +21,4 @@ jobs:
         hatch env create dev
     - run: echo "$(hatch env find dev)/bin" >> $GITHUB_PATH
     - name: Run pyright
-      uses: jakebailey/pyright-action@vb5d50e5cde6547546a5c4ac92e416a8c2c1a1dfe
+      uses: jakebailey/pyright-action@b5d50e5cde6547546a5c4ac92e416a8c2c1a1dfe
