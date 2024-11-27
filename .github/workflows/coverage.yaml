@@ -16,17 +16,6 @@ jobs:
       contents: write
       actions: read
     steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/download-artifact@v4
-      id: download
-      with:
-        pattern: coverage-*
-        merge-multiple: true
-    - name: Re-add relative so the action is happy
-      run: |
-        echo "[run]" >> .coveragerc
-        echo "relative_files = true" >> .coveragerc
     - name: Python Coverage Comment
       uses: py-cov-action/python-coverage-comment-action@b2eb38dd175bf053189b35f738f9207278b00925
       with:

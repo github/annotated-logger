@@ -44,3 +44,7 @@ This project is licensed under the terms of the MIT open source license. Please 
 
 ## Maintainers
 This project is primarily maintained by `crimsonknave` on behalf of GitHub's Vulnerability Management team as it was initially developed for our internal use.
+
+## Support
+
+Reported bugs will be addressed, pull requests are welcome, but there is limited bandwidth for work on new features.
