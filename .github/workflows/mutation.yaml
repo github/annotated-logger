@@ -30,7 +30,7 @@ jobs:
         hatch run dev:mutmut results
         hatch run dev:mutmut junitxml > junit.xml
     - name: Parse Results
-      uses: mikepenz/action-junit-report@v4
+      uses: mikepenz/action-junit-report@v5
       if: always()
       with:
         report_paths: junit.xml
