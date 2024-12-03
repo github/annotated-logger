@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 from requests.exceptions import HTTPError
 
@@ -23,9 +23,27 @@ class BasePlugin:
         self, exception: Exception, logger: AnnotatedAdapter
     ) -> AnnotatedAdapter:
         """Handle an uncaught excaption."""
-        logger.annotate(success=False)
-        logger.annotate(exception_title=str(exception))
+        if "success" not in logger.filter.annotations:
+            logger.annotate(success=False)
+        if "exception_title" not in logger.filter.annotations:
+            logger.annotate(exception_title=str(exception))
         return logger
+
+
+class RuntimeAnnotationsPlugin(BasePlugin):
+    """Plugin that sets annotations dynamically."""
+
+    def __init__(
+        self, runtime_annotations: dict[str, Callable[[logging.LogRecord], Any]]
+    ) -> None:
+        """Store the runtime annotations."""
+        self.runtime_annotations = runtime_annotations
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """Add any configured runtime annotations."""
+        for key, function in self.runtime_annotations.items():
+            record.__dict__[key] = function(record)
+        return True
 
 
 class RequestsPlugin(BasePlugin):
@@ -182,7 +200,7 @@ class GitHubActionsPlugin(BasePlugin):
                     "level": "DEBUG",
                     "handlers": [
                         # This is from the default logging config
-                        "annotated_handler",
+                        #  "annotated_handler",
                         "actions_handler",
                     ],
                 },

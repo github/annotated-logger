@@ -2,7 +2,7 @@ import logging
 import logging.config
 
 from annotated_logger import AnnotatedAdapter, AnnotatedFilter, AnnotatedLogger
-from annotated_logger.plugins import BasePlugin, RenamerPlugin
+from annotated_logger.plugins import BasePlugin, RenamerPlugin, RuntimeAnnotationsPlugin
 
 # This logging config creates 4 loggers:
 # * A logger for "annotated_logger.logging_config", which logs all messages as json and
@@ -48,8 +48,10 @@ LOGGING = {
             "()": AnnotatedFilter,
             "annotations": {"decorated": False, "class_based_filter": True},
             "class_annotations": {},
-            "runtime_annotations": {"custom_runtime": lambda _record: True},
-            "plugins": [BasePlugin()],
+            "plugins": [
+                BasePlugin(),
+                RuntimeAnnotationsPlugin({"custom_runtime": lambda _record: True}),
+            ],
         },
     },
     "handlers": {
@@ -153,6 +155,10 @@ def runtime(_record: logging.LogRecord) -> str:
 
 annotated_logger = AnnotatedLogger(
     annotations={"hostname": "my-host"},
+    # This is deprecated, use the RuntimeAnnotationsPlugin instead.
+    # This param is kept for backwards compatibility and creates a
+    # RuntimeAnnotationsPlugin instead.
+    # This is left as an example and to provide test coverage.
     runtime_annotations={"runtime": runtime},
     plugins=[RenamerPlugin(time="created", lvl="levelname")],
     log_level=logging.DEBUG,

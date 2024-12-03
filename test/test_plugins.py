@@ -236,6 +236,7 @@ class TestNestedRemoverPlugin:
         )
 
 
+@pytest.mark.usefixtures("_reload_actions")
 class TestGitHubActionsPlugin:
     def test_logs_normally(self, annotated_logger_mock):
         action = ActionsExample()
@@ -243,5 +244,13 @@ class TestGitHubActionsPlugin:
 
         annotated_logger_mock.assert_logged("info", "Step 1 running!")
 
-    def test_logs_actions_annotations(self, annotated_logger_mock, caplog):
-        pass
+    @pytest.mark.parametrize(
+        "annotated_logger_object", [logging.getLogger("annotated_logger.actions")]
+    )
+    def test_logs_actions_annotations(self, annotated_logger_mock):
+        action = ActionsExample()
+        action.first_step()
+        action.second_step()
+
+        assert "notice:: Step 1 running!" in annotated_logger_mock.messages[0]
+        annotated_logger_mock.assert_logged("DEBUG", count=0)

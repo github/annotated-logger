@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from copy import copy
 from typing import Any
 
 import annotated_logger
@@ -14,14 +15,12 @@ class AnnotatedFilter(logging.Filter):
     def __init__(
         self,
         annotations: Annotations | None = None,
-        runtime_annotations: Annotations | None = None,
         class_annotations: Annotations | None = None,
         plugins: list[annotated_logger.BasePlugin] | None = None,
     ) -> None:
         """Store the annotations, attributes and plugins."""
         self.annotations = annotations or {}
         self.class_annotations = class_annotations or {}
-        self.runtime_annotations = runtime_annotations or {}
         self.plugins = plugins or [annotated_logger.BasePlugin()]
 
         # This allows plugins to determine what fields were added by the user
@@ -29,14 +28,10 @@ class AnnotatedFilter(logging.Filter):
         # TODO(crimsonknave): Make a test for this # noqa: TD003, FIX002
         self.base_attributes = logging.makeLogRecord({}).__dict__  # pragma: no mutate
 
-    def _all_annotations(self, record: logging.LogRecord) -> Annotations:
+    def _all_annotations(self) -> Annotations:
         annotations = {}
-        # Using copy might be better, but, we don't want to add
-        # the runtime annotations to the stored annotations
-        annotations.update(self.class_annotations)
-        annotations.update(self.annotations)
-        for key, function in self.runtime_annotations.items():
-            annotations[key] = function(record)
+        annotations.update(copy(self.class_annotations))
+        annotations.update(copy(self.annotations))
         annotations["annotated"] = True
         return annotations
 
@@ -48,7 +43,7 @@ class AnnotatedFilter(logging.Filter):
         sees it. Returning False from the filter method will stop the evaluation and
         the log record won't be emitted.
         """
-        record.__dict__.update(self._all_annotations(record))
+        record.__dict__.update(self._all_annotations())
         for plugin in self.plugins:
             try:
                 result = plugin.filter(record)

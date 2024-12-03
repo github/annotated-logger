@@ -11,6 +11,7 @@ import example.calculator
 import example.default
 import test.demo
 from annotated_logger import AnnotatedLogger
+from annotated_logger.plugins import RuntimeAnnotationsPlugin
 
 if TYPE_CHECKING:
     from annotated_logger.mocks import AnnotatedLogMock
@@ -217,10 +218,14 @@ class TestCalculatorExample:
     def test_runtime_not_cached(self, annotated_logger_mock, mocker):
         runtime_mock = mocker.Mock(name="runtime_not_cached")
         runtime_mock.side_effect = ["first", "second", "third", "fourth"]
-        runtime_annotations = example.calculator.annotated_logger.runtime_annotations
-        example.calculator.annotated_logger.runtime_annotations = {
-            "runtime": runtime_mock
-        }
+        plugin = next(
+            plugin
+            for plugin in example.calculator.annotated_logger.plugins
+            if isinstance(plugin, RuntimeAnnotationsPlugin)
+        )
+
+        runtime_annotations = plugin.runtime_annotations
+        plugin.runtime_annotations = {"runtime": runtime_mock}
         # Need to use full path as that's what's reloaded. The other tests don't need
         # to as they're not mocking the runtime annotations
         calc = example.calculator.Calculator(12, 13)
@@ -243,7 +248,7 @@ class TestCalculatorExample:
                 "runtime": "second",
             },
         )
-        example.calculator.annotated_logger.runtime_annotations = runtime_annotations
+        plugin.runtime_annotations = runtime_annotations
 
     def test_raises_type_error_with_too_few_args(self):
         calc = example.calculator.Calculator(12, 13)

@@ -41,3 +41,8 @@ class ActionsExample:
     def first_step(self, annotated_logger: AnnotatedAdapter) -> None:
         """First step of your action."""
         annotated_logger.info("Step 1 running!")
+
+    @annotate_logs(_typing_requested=True)
+    def second_step(self, annotated_logger: AnnotatedAdapter) -> None:
+        """Second step of your action."""
+        annotated_logger.debug("Step 2 running!")

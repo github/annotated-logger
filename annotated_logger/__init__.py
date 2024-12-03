@@ -24,7 +24,7 @@ from typing import (
 from makefun import wraps
 
 from annotated_logger.filter import AnnotatedFilter
-from annotated_logger.plugins import BasePlugin
+from annotated_logger.plugins import BasePlugin, RuntimeAnnotationsPlugin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import MutableMapping
@@ -255,8 +255,8 @@ class AnnotatedLogger:
     Args:
     ----
         annotations: Dictionary of annotations to be added to every log message
-        runtime_annotations: dictionary of method references to be called when
-            a log message is emitted
+        runtime_annotations: [Deprecated] Dictionary of method references to be called
+            when a log message is emitted. Use the `RuntimeAnnotationsPlugin` instead.
         plugins: list of plugins to use
 
     Methods:
@@ -313,9 +313,11 @@ class AnnotatedLogger:
         self.logger_base = logging.getLogger(self.logger_root_name)
         self.logger_base.setLevel(self.log_level)
         self.annotations = annotations or {}
-        self.runtime_annotations = runtime_annotations or {}
         self.plugins = [BasePlugin()]
         self.plugins.extend(plugins)
+        # Preserve the `runtime_annotations` param for backwards compat
+        if runtime_annotations:
+            self.plugins.append(RuntimeAnnotationsPlugin(runtime_annotations))
         if formatter and config:
             msg = "Cannot pass both formatter and config."
             raise ValueError(msg)
@@ -385,7 +387,6 @@ class AnnotatedLogger:
         return AnnotatedFilter(
             annotations=annotations,
             class_annotations=class_annotations,
-            runtime_annotations=self.runtime_annotations,
             plugins=self.plugins,
         )
 
