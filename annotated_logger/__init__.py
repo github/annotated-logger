@@ -24,7 +24,7 @@ from typing import (
 from makefun import wraps
 
 from annotated_logger.filter import AnnotatedFilter
-from annotated_logger.plugins import BasePlugin, RuntimeAnnotationsPlugin
+from annotated_logger.plugins import BasePlugin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import MutableMapping
@@ -255,8 +255,6 @@ class AnnotatedLogger:
     Args:
     ----
         annotations: Dictionary of annotations to be added to every log message
-        runtime_annotations: [Deprecated] Dictionary of method references to be called
-            when a log message is emitted. Use the `RuntimeAnnotationsPlugin` instead.
         plugins: list of plugins to use
 
     Methods:
@@ -271,10 +269,7 @@ class AnnotatedLogger:
     def __init__(  # noqa: PLR0913
         self,
         annotations: dict[str, Any] | None = None,
-        runtime_annotations: dict[str, Callable[[logging.LogRecord], Any]]
-        | None = None,
         plugins: list[BasePlugin] | None = None,
-        formatter: logging.Formatter | None = None,
         max_length: int | None = None,
         log_level: int = logging.INFO,
         name: str = "annotated_logger",
@@ -285,9 +280,7 @@ class AnnotatedLogger:
         Args:
         ----
         annotations: Dictionary of static annotations - default None
-        runtime_annotations: Dictionary of dynamic annotations - default None
         plugins: List of plugins to be applied - default [BasePlugin]
-        formatter: Formatter for the handler. If none is provided a JsonFormatter
             is created and used - default None
         max_length: Integer, maximum length of a message before it's broken into
             multiple message and log calls. - default None
@@ -315,12 +308,6 @@ class AnnotatedLogger:
         self.annotations = annotations or {}
         self.plugins = [BasePlugin()]
         self.plugins.extend(plugins)
-        # Preserve the `runtime_annotations` param for backwards compat
-        if runtime_annotations:
-            self.plugins.append(RuntimeAnnotationsPlugin(runtime_annotations))
-        if formatter and config:
-            msg = "Cannot pass both formatter and config."
-            raise ValueError(msg)
 
         if config is None:
             config = deepcopy(DEFAULT_LOGGING_CONFIG)

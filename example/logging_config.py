@@ -159,8 +159,10 @@ annotated_logger = AnnotatedLogger(
     # This param is kept for backwards compatibility and creates a
     # RuntimeAnnotationsPlugin instead.
     # This is left as an example and to provide test coverage.
-    runtime_annotations={"runtime": runtime},
-    plugins=[RenamerPlugin(time="created", lvl="levelname")],
+    plugins=[
+        RenamerPlugin(time="created", lvl="levelname"),
+        RuntimeAnnotationsPlugin({"runtime": runtime}),
+    ],
     log_level=logging.DEBUG,
     max_length=200,
     name="annotated_logger.logging_config",

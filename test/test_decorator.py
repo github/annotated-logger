@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 from typing import TYPE_CHECKING
 
 import pytest
@@ -10,7 +9,6 @@ import example.api
 import example.calculator
 import example.default
 import test.demo
-from annotated_logger import AnnotatedLogger
 from annotated_logger.plugins import RuntimeAnnotationsPlugin
 
 if TYPE_CHECKING:
@@ -620,10 +618,3 @@ class TestNonClassBased:
             TypeError, match="^annotated_logger must be the first argument$"
         ):
             import example.invalid_order  # noqa: F401
-
-    def test_cannot_use_both_formatter_and_config(self):
-        formatter = logging.Formatter("%(time)s %(lvl)s %(name)s %(message)s")
-        with pytest.raises(
-            ValueError, match="^Cannot pass both formatter and config.$"
-        ):
-            AnnotatedLogger(formatter=formatter, config={"logging": "config"})

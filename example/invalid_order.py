@@ -1,9 +1,8 @@
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
-from annotated_logger.plugins import RemoverPlugin
 
 # Actions runs in async.io it appears and that inejcts `taskName`
 # But, locally that's not there, so it messes up the absent all tests
-annotated_logger = AnnotatedLogger(plugins=[RemoverPlugin(["taskName"])])
+annotated_logger = AnnotatedLogger()
 
 annotate_logs = annotated_logger.annotate_logs
 

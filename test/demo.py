@@ -1,6 +1,7 @@
 import logging
 
 from annotated_logger import AnnotatedLogger
+from annotated_logger.plugins import RuntimeAnnotationsPlugin
 
 
 def runtime(_record: logging.LogRecord):
@@ -9,7 +10,7 @@ def runtime(_record: logging.LogRecord):
 
 annotated_logger = AnnotatedLogger(
     annotations={"extra": "new data"},
-    runtime_annotations={"runtime": runtime},
+    plugins=[RuntimeAnnotationsPlugin({"runtime": runtime})],
 )
 
 annotate_logs = annotated_logger.annotate_logs
