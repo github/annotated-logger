@@ -162,11 +162,11 @@ class GitHubActionsPlugin(BasePlugin):
             for k, v in record.__dict__.items()
             if k not in self.base_attributes and k not in self.attributes_to_exclude
         }
-        record.__dict__["added_attributes"] = added_attributes
+        record.added_attributes = added_attributes
         name = record.levelname.lower()
         if name == "info":  # pragma: no cover
             name = "notice"
-        record.__dict__["github_annotation"] = f"{name}::"
+        record.github_annotation = f"{name}::"
 
         return True
 
