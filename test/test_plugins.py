@@ -252,5 +252,8 @@ class TestGitHubActionsPlugin:
         action.first_step()
         action.second_step()
 
-        assert "notice:: Step 1 running!" in annotated_logger_mock.messages[0]
+        assert (
+            "notice:: Step 1 running! - {'action': 'example.actions:ActionsExample.first_step'}"
+            in annotated_logger_mock.messages[0]
+        )
         annotated_logger_mock.assert_logged("DEBUG", count=0)
