@@ -1,15 +1,10 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Literal
+from typing import Any, Literal
 
 import pychoir
 import pytest
-
-import annotated_logger
-
-if TYPE_CHECKING:  # pragma: no cover
-    from unittest.mock import MagicMock
 
 
 class AssertLogged:
@@ -111,18 +106,14 @@ class AssertLogged:
         record: logging.LogRecord,
     ) -> list[str]:
         differences = []
-        if "levelname" in record.__dict__:
-            level = record.levelname
-        elif "level" in record.__dict__:
-            level = record.level  # pyright: ignore[reportAttributeAccessIssue]
-        # If you have removed levelname and levelno and didn't add level... good luck
-        else:
-            level = {
-                logging.DEBUG: "DEBUG",
-                logging.INFO: "INFO",
-                logging.WARNING: "WARNING",
-                logging.ERROR: "ERROR",
-            }[record.levelno]
+        # `levelname` is often renamed. But, `levelno` shouldn't be touched as often
+        # So, don't try to guess what the level name is, just use the levelno.
+        level = {
+            logging.DEBUG: "DEBUG",
+            logging.INFO: "INFO",
+            logging.WARNING: "WARNING",
+            logging.ERROR: "ERROR",
+        }[record.levelno]
         actual = {
             "level": level,
             "msg": record.msg,
@@ -165,7 +156,7 @@ class AssertLogged:
         return differences
 
 
-class AnnotatedLogMock:
+class AnnotatedLogMock(logging.Handler):
     """Mock that captures logs and provides extra assertion logic."""
 
     ALL = "ALL"
@@ -244,10 +235,19 @@ class AnnotatedLogMock:
 
 
 @pytest.fixture()
-def annotated_logger_mock(mocker: MagicMock) -> AnnotatedLogMock:
+def annotated_logger_object() -> logging.Logger:
+    """Logger to wrap with the `annotated_logger_mock` fixture."""
+    return logging.getLogger("annotated_logger")
+
+
+@pytest.fixture()
+def annotated_logger_mock(annotated_logger_object: logging.Logger) -> AnnotatedLogMock:
     """Fixture for a mock of the annotated logger."""
-    return mocker.patch(
-        "annotated_logger.handler",
-        new_callable=AnnotatedLogMock,
-        handler=annotated_logger.handler,
+    handler = annotated_logger_object.handlers[0]
+    annotated_logger_object.removeHandler(handler)
+    mock_handler = AnnotatedLogMock(
+        handler=handler,
     )
+
+    annotated_logger_object.addHandler(mock_handler)
+    return mock_handler

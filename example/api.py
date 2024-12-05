@@ -7,7 +7,7 @@ from requests.exceptions import HTTPError
 from requests.models import Response
 
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
-from annotated_logger.plugins import RequestsPlugin
+from annotated_logger.plugins import RequestsPlugin, RuntimeAnnotationsPlugin
 
 
 def runtime(_record: logging.LogRecord) -> str:
@@ -17,8 +17,10 @@ def runtime(_record: logging.LogRecord) -> str:
 
 annotated_logger = AnnotatedLogger(
     annotations={"extra": "new data"},
-    runtime_annotations={"runtime": runtime},
-    plugins=[RequestsPlugin()],
+    plugins=[
+        RequestsPlugin(),
+        RuntimeAnnotationsPlugin({"runtime": runtime}),
+    ],
     log_level=logging.DEBUG,
     name="annotated_logger.api",
 )

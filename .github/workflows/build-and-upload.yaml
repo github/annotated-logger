@@ -38,14 +38,3 @@ jobs:
       - name: Build Package
         uses: ./ # Action defined in action.yaml in the root
         if: steps.changed-files.outputs.any_changed == 'true'
-
-      - name: Setup Octofactory config
-        uses: jfrog/setup-jfrog-cli@7c95feb32008765e1b4e626b078dfd897c4340ad
-        if: steps.changed-files.outputs.any_changed == 'true'
-        env:
-          JF_ENV_1: ${{ secrets.OCTOFACTORY_SERVER_CONFIG }}
-
-      - name: Upload to Octofactory
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          jfrog rt u dist/ logger-decorator-pypi

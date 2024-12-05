@@ -1,0 +1,23 @@
+
+name: Post Coverage Commit
+
+on:
+  workflow_run:
+    workflows: ["Pytest"]
+    types:
+      - completed
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == "pull_request" && github.event.workflow_run.conclusion == "success"
+    permissions:
+      pull-requests: write
+      contents: write
+      actions: read
+    steps:
+    - name: Python Coverage Comment
+      uses: py-cov-action/python-coverage-comment-action@b2eb38dd175bf053189b35f738f9207278b00925
+      with:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}

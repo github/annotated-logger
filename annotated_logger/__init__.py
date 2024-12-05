@@ -3,10 +3,10 @@ from __future__ import annotations
 import contextlib
 import inspect
 import logging
-import sys
+import logging.config
 import time
 import uuid
-from copy import copy
+from copy import copy, deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,14 +22,14 @@ from typing import (
 )
 
 from makefun import wraps
-from pythonjsonlogger.jsonlogger import JsonFormatter
 
+from annotated_logger.filter import AnnotatedFilter
 from annotated_logger.plugins import BasePlugin
 
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import MutableMapping
 
-VERSION = "1.1.3"  # pragma: no mutate
+VERSION = "1.2.0"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -88,7 +88,35 @@ Decorator = (
 Annotations = dict[str, Any]
 
 
-handler = logging.StreamHandler(sys.stdout)
+DEFAULT_LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,  # pragma: no mutate
+    "filters": {
+        "annotated_filter": {
+            "annotated_filter": True,  # pragma: no mutate
+        }
+    },
+    "handlers": {
+        "annotated_handler": {
+            "class": "logging.StreamHandler",
+            "formatter": "annotated_formatter",
+        },
+    },
+    "formatters": {
+        "annotated_formatter": {
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",  # pragma: no mutate
+            "format": "{created} {levelname} {name} {message}",  # pragma: no mutate
+            "style": "{",
+        },
+    },
+    "loggers": {
+        "annotated_logger": {
+            "level": "DEBUG",
+            "handlers": ["annotated_handler"],
+            "propagate": False,  # pragma: no mutate
+        },
+    },
+}
 
 
 class AnnotatedIterator(Iterator[T]):
@@ -134,62 +162,6 @@ class AnnotatedIterator(Iterator[T]):
 
         self.log_method("next", extra=self.extras)
         return value
-
-
-class AnnotatedFilter(logging.Filter):
-    """Filter class that stores the annotations and plugins."""
-
-    def __init__(
-        self,
-        annotations: Annotations,
-        runtime_annotations: Annotations,
-        class_annotations: Annotations,
-        plugins: list[BasePlugin],
-    ) -> None:
-        """Store the annotations, attributes and plugins."""
-        self.annotations = annotations
-        self.class_annotations = class_annotations
-        self.runtime_annotations = runtime_annotations or {}
-        self.plugins = plugins
-
-        # This allows plugins to determine what fields were added by the user
-        # vs the ones native to the log record
-        # TODO(crimsonknave): Make a test for this # noqa: TD003, FIX002
-        self.base_attributes = logging.makeLogRecord({}).__dict__  # pragma: no mutate
-
-    def _all_annotations(self, record: logging.LogRecord) -> Annotations:
-        annotations = {}
-        # Using copy might be better, but, we don't want to add
-        # the runtime annotations to the stored annotations
-        annotations.update(self.class_annotations)
-        annotations.update(self.annotations)
-        for key, function in self.runtime_annotations.items():
-            annotations[key] = function(record)
-        annotations["annotated"] = True
-        return annotations
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        """Add the annotations to the record and allow plugins to filter the record.
-
-        The `filter` method is called on each plugin in the order they are listed.
-        The plugin is then able to maniuplate the record object before the next plugin
-        sees it. Returning False from the filter method will stop the evaluation and
-        the log record won't be emitted.
-        """
-        record.__dict__.update(self._all_annotations(record))
-
-        for plugin in self.plugins:
-            try:
-                result = plugin.filter(record)
-            except Exception:  # noqa: BLE001
-                failed_plugins = record.__dict__.get("failed_plugins", [])
-                failed_plugins.append(str(plugin.__class__))
-                record.__dict__["failed_plugins"] = failed_plugins
-                result = True
-
-            if not result:
-                return False
-        return True
 
 
 class AnnotatedAdapter(logging.LoggerAdapter):  # pyright: ignore[reportMissingTypeArgument]
@@ -283,8 +255,6 @@ class AnnotatedLogger:
     Args:
     ----
         annotations: Dictionary of annotations to be added to every log message
-        runtime_annotations: dictionary of method references to be called when
-            a log message is emitted
         plugins: list of plugins to use
 
     Methods:
@@ -299,22 +269,18 @@ class AnnotatedLogger:
     def __init__(  # noqa: PLR0913
         self,
         annotations: dict[str, Any] | None = None,
-        runtime_annotations: dict[str, Callable[[logging.LogRecord], Any]]
-        | None = None,
         plugins: list[BasePlugin] | None = None,
-        formatter: logging.Formatter | None = None,
         max_length: int | None = None,
         log_level: int = logging.INFO,
         name: str = "annotated_logger",
+        config: dict[str, Any] | Literal[False] | None = None,
     ) -> None:
         """Store the settings.
 
         Args:
         ----
         annotations: Dictionary of static annotations - default None
-        runtime_annotations: Dictionary of dynamic annotations - default None
         plugins: List of plugins to be applied - default [BasePlugin]
-        formatter: Formatter for the handler. If none is provided a JsonFormatter
             is created and used - default None
         max_length: Integer, maximum length of a message before it's broken into
             multiple message and log calls. - default None
@@ -324,6 +290,12 @@ class AnnotatedLogger:
             `AnnotatedLogger` object is created in a project this should be set,
             otherwise settings like level will be overwritten by the second to execute
             - default 'annotated_logger'
+        config: Optional - logging config dictionary to be passed to
+            logging.config.dictConfig or False. If false dictConfig will not be called.
+            If not passed the DEFAULT_LOGGING_CONFIG will be used. A special
+            `annotated_filter` keyword is looked for, if present it will be
+            replaced with a `()` filter config to generate a filter for this
+            instance of `AnnotatedLogger`.
 
         """
         if plugins is None:
@@ -334,17 +306,31 @@ class AnnotatedLogger:
         self.logger_base = logging.getLogger(self.logger_root_name)
         self.logger_base.setLevel(self.log_level)
         self.annotations = annotations or {}
-        self.runtime_annotations = runtime_annotations or {}
         self.plugins = [BasePlugin()]
         self.plugins.extend(plugins)
-        self.formatter = formatter or JsonFormatter(
-            "%(created)s %(levelname)s %(name)s %(message)s"  # pragma: no mutate
-        )
-        handler.setFormatter(self.formatter)
+
+        if config is None:
+            config = deepcopy(DEFAULT_LOGGING_CONFIG)
+        if config:
+            for config_filter in config["filters"].values():
+                if config_filter.get("annotated_filter"):
+                    del config_filter["annotated_filter"]
+                    config_filter["()"] = self.generate_filter
+
+        # If we pass in config=False we don't want to configure.
+        # This is typically because we have another AnnotatedLogger
+        # object which did run the config and the dict config had config
+        # for both.
+        if config:
+            logging.config.dictConfig(config)
+
         self.max_length = max_length
 
     def _generate_logger(
-        self, function: Function[S, P, R] | None = None, cls: type | None = None
+        self,
+        function: Function[S, P, R] | None = None,
+        cls: type | None = None,
+        logger_base_name: str | None = None,
     ) -> AnnotatedAdapter:
         """Generate a unique adapter with a unique logger object.
 
@@ -352,11 +338,10 @@ class AnnotatedLogger:
         The filter stores the annotations inside it, so they will mix if a new filter
         and logger are not created each time.
         """
+        root_name = logger_base_name or self.logger_root_name
         logger = logging.getLogger(
-            f"{self.logger_root_name}.{uuid.uuid4()}"  # pragma: no mutate
+            f"{root_name}.{uuid.uuid4()}"  # pragma: no mutate
         )
-
-        logger.addHandler(handler)
 
         annotated_filter = self.generate_filter(function=function, cls=cls)
 
@@ -368,23 +353,27 @@ class AnnotatedLogger:
         return {key: f"{function.__module__}:{function.__qualname__}"}
 
     def generate_filter(
-        self, function: Function[S, P, R] | None = None, cls: type[C_co] | None = None
+        self,
+        function: Function[S, P, R] | None = None,
+        cls: type[C_co] | None = None,
+        annotations: dict[str, Any] | None = None,
     ) -> AnnotatedFilter:
         """Create a AnnotatedFilter with the correct annotations and plugins."""
+        annotations_passed = annotations
+        annotations = annotations or {}
         if function:
-            annotations = self._action_annotation(function)
+            annotations.update(self._action_annotation(function))
             class_annotations = {}
         elif cls:
             class_annotations = {"class": f"{cls.__module__}:{cls.__qualname__}"}
-            annotations = {}
         else:
-            annotations = {}
             class_annotations = {}
-        annotations.update(self.annotations)
+        if not annotations_passed:
+            annotations.update(self.annotations)
+
         return AnnotatedFilter(
             annotations=annotations,
             class_annotations=class_annotations,
-            runtime_annotations=self.runtime_annotations,
             plugins=self.plugins,
         )
 
@@ -392,6 +381,110 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        _typing_requested: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        provided: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        _typing_self: Literal[True],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        _typing_self: Literal[True],
+        _typing_requested: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        provided: Literal[False],
+        _typing_requested: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        _typing_self: Literal[True],
+        provided: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
+        *,
+        success_info: bool = True,  # pragma: no mutate
+        pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P3] = None,
+        _typing_self: Literal[True],
+        _typing_requested: Literal[False],
+        provided: Literal[False],
+    ) -> NoInjectionSelf[S, P, R]: ...
+
+    #### Class True
+    @overload
+    def annotate_logs(
+        self,
+        logger_name: str | None = None,
         *,
         _typing_class: Literal[True],
         success_info: bool = True,  # pragma: no mutate
@@ -399,95 +492,11 @@ class AnnotatedLogger:
         post_call: PostCall[S, P3] = None,
     ) -> Callable[[type[C_co]], type[C_co]]: ...
 
-    #### Defaults
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        _typing_requested: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        provided: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        _typing_self: Literal[True],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        _typing_self: Literal[True],
-        _typing_requested: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        provided: Literal[False],
-        _typing_requested: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        _typing_self: Literal[True],
-        provided: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
-    @overload
-    def annotate_logs(
-        self,
-        *,
-        success_info: bool = True,  # pragma: no mutate
-        pre_call: PreCall[S2, P2] = None,
-        post_call: PostCall[S2, P3] = None,
-        _typing_self: Literal[True],
-        _typing_requested: Literal[False],
-        provided: Literal[False],
-    ) -> NoInjectionSelf[S, P, R]: ...
-
     ### Instance False
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -498,6 +507,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -509,6 +519,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -520,6 +531,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -533,6 +545,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -543,6 +556,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -554,6 +568,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -565,6 +580,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -580,6 +596,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -591,6 +608,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -604,6 +622,7 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
@@ -617,9 +636,11 @@ class AnnotatedLogger:
     @overload
     def annotate_logs(
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,  # pragma: no mutate
         pre_call: PreCall[S2, P2] = None,
+        post_call: PostCall[S2, P2] = None,
         _typing_self: Literal[False],
         _typing_requested: Literal[True],
         provided: Literal[True],
@@ -630,6 +651,7 @@ class AnnotatedLogger:
     # So, ignoring the complexity metric
     def annotate_logs(  # noqa: C901
         self,
+        logger_name: str | None = None,
         *,
         success_info: bool = True,
         pre_call: PreCall[S2, P2] = None,
@@ -643,6 +665,8 @@ class AnnotatedLogger:
 
         Args:
         ----
+            logger_name: Optional - Specify the name of the logger attached to
+            the decorated function.
             success_info: Log success at an info level, if falsey success will be
             logged at debug. Default: True
             provided: Boolean that indicates the caller will be providing it's
@@ -699,7 +723,9 @@ class AnnotatedLogger:
                 def wrap_class(
                     *args: P.args, **kwargs: P.kwargs
                 ) -> AnnotatedClass[C_co]:
-                    logger = self._generate_logger(cls=wrapped)
+                    logger = self._generate_logger(
+                        cls=wrapped, logger_base_name=logger_name
+                    )
                     logger.debug("init")
                     new = cast(AnnotatedClass[C_co], wrapped(*args, **kwargs))
                     new.annotated_logger = logger
@@ -721,7 +747,7 @@ class AnnotatedLogger:
                 post_call_attempted = False  # pragma: no mutate
 
                 new_args, new_kwargs, logger, pre_execution_annotations = inject_logger(
-                    list(args), kwargs
+                    list(args), kwargs, logger_base_name=logger_name
                 )
                 try:
                     start_time = time.perf_counter()
@@ -764,7 +790,10 @@ class AnnotatedLogger:
         return decorator
 
     def _determine_signature_adjustments(
-        self, function: Function[S, P, R], *, provided: bool
+        self,
+        function: Function[S, P, R],
+        *,
+        provided: bool,
     ) -> tuple[
         list[str],
         Callable[
@@ -788,10 +817,14 @@ class AnnotatedLogger:
                 remove_args = ["annotated_logger"]
 
         def inject_logger(
-            args: list[Any], kwargs: dict[str, Any]
+            args: list[Any],
+            kwargs: dict[str, Any],
+            logger_base_name: str | None = None,
         ) -> tuple[list[Any], dict[str, Any], AnnotatedAdapter, Annotations | None]:
             if not logger_requested:
-                logger = self._generate_logger(function)
+                logger = self._generate_logger(
+                    function, logger_base_name=logger_base_name
+                )
                 return (args, kwargs, logger, None)
 
             by_index = False  # pragma: no mutate
@@ -811,6 +844,7 @@ class AnnotatedLogger:
                     args=new_args,
                     index=index,
                     function=function,
+                    logger_base_name=logger_base_name,
                 )
             else:
                 logger, annotations, new_kwargs = self._inject_by_kwarg(
@@ -818,6 +852,7 @@ class AnnotatedLogger:
                     instance_method=instance_method,
                     kwargs=new_kwargs,
                     function=function,
+                    logger_base_name=logger_base_name,
                 )
 
             return new_args, new_kwargs, logger, annotations
@@ -831,6 +866,7 @@ class AnnotatedLogger:
         instance_method: bool,
         function: Function[S, P, R],
         kwargs: dict[str, Any],
+        logger_base_name: str | None = None,
     ) -> tuple[AnnotatedAdapter, Annotations | None, dict[str, Any]]:
         if provided:
             instance = kwargs["annotated_logger"]
@@ -838,13 +874,15 @@ class AnnotatedLogger:
             instance = kwargs["self"]
         else:
             instance = False  # pragma: no mutate
-        logger, annotations = self._pick_correct_logger(function, instance)
+        logger, annotations = self._pick_correct_logger(
+            function, instance, logger_base_name=logger_base_name
+        )
         if not provided:
             kwargs["annotated_logger"] = logger
 
         return logger, annotations, kwargs
 
-    def _inject_by_index(
+    def _inject_by_index(  # noqa: PLR0913
         self,
         *,
         provided: bool,
@@ -852,6 +890,7 @@ class AnnotatedLogger:
         function: Function[S, P, R],
         args: list[Any],
         index: int,
+        logger_base_name: str | None = None,
     ) -> tuple[AnnotatedAdapter, Annotations | None, list[Any]]:
         if provided:
             instance = args[index]
@@ -859,7 +898,9 @@ class AnnotatedLogger:
             instance = args[0]
         else:
             instance = False  # pragma: no mutate
-        logger, annotations = self._pick_correct_logger(function, instance)
+        logger, annotations = self._pick_correct_logger(
+            function, instance, logger_base_name=logger_base_name
+        )
         if not provided:
             args.insert(index, logger)
         return logger, annotations, args
@@ -879,7 +920,10 @@ class AnnotatedLogger:
         return index, instance_method
 
     def _pick_correct_logger(
-        self, function: Function[S, P, R], instance: object | bool
+        self,
+        function: Function[S, P, R],
+        instance: object | bool,
+        logger_base_name: str | None = None,
     ) -> tuple[AnnotatedAdapter, Annotations | None]:
         """Use the instance's logger and annotations if present."""
         if instance and hasattr(instance, "annotated_logger"):
@@ -896,7 +940,10 @@ class AnnotatedLogger:
             )
             return (logger, annotations)
 
-        return (self._generate_logger(function), None)
+        return (
+            self._generate_logger(function, logger_base_name=logger_base_name),
+            None,
+        )
 
 
 def _attempt_post_call(

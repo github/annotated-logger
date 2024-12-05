@@ -16,16 +16,12 @@ class DefaultExample:
         """Emit an info log."""
         annotated_logger.info("foo")
 
-    #  def test(self, _first, *args):
-    #      pass
-
     @annotate_logs(_typing_requested=True)
     def var_args(
         self,
         annotated_logger: AnnotatedAdapter,
         _first: str,
         *my_args: str,
-        #  self, annotated_logger: AnnotatedAdapter, _first: str, *my_args: str
     ) -> bool:
         """Take a splat of args."""
         annotated_logger.annotate(first=_first)

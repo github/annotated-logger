@@ -4,7 +4,8 @@ import pytest
 from requests.exceptions import HTTPError
 
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
-from annotated_logger.plugins import BasePlugin
+from annotated_logger.plugins import BasePlugin, RenamerPlugin
+from example.actions import ActionsExample
 from example.api import ApiClient
 from example.calculator import Calculator
 
@@ -40,6 +41,11 @@ class SpyPlugin(BasePlugin):
 def annotated_logger(plugins):
     return AnnotatedLogger(
         plugins=plugins,
+        name="annotated_logger.test_plugins",
+        # I believe that allowing this to set config leads to duplicate
+        # filters/handlers that re-written on each dictConfig call,
+        # but aren't overwritten, just hidden/dereferences, but still called
+        config=False,
     )
 
 
@@ -68,6 +74,13 @@ def skip_plugin():
     return SpyPlugin(filter_message=True)
 
 
+# Request the annotated_logger fixture so that the config
+# has been setup before we get the logger
+@pytest.fixture()
+def annotated_logger_object(annotated_logger):  # noqa: ARG001
+    return logging.getLogger("annotated_logger")
+
+
 class TestPlugins:
     class TestSkip:
         @pytest.fixture()
@@ -90,7 +103,9 @@ class TestPlugins:
         def plugins(self, working_plugin):
             return [working_plugin]
 
-        def test_working_filter(self, annotate_logs, working_plugin):
+        def test_working_filter(
+            self, annotated_logger_mock, annotate_logs, working_plugin
+        ):
             @annotate_logs()
             def should_work():
                 return True
@@ -99,6 +114,7 @@ class TestPlugins:
             assert working_plugin.filter_called is False
             should_work()
             assert working_plugin.filter_called is True
+            annotated_logger_mock.assert_logged("info", "success")
 
         def test_working_exception(self, annotate_logs, working_plugin):
             @annotate_logs()
@@ -177,6 +193,36 @@ class TestRenamerPlugin:
             absent=["joke"],
         )
 
+    def test_field_missing_strict(self, annotated_logger_mock):
+        annotate_logs = AnnotatedLogger(
+            plugins=[RenamerPlugin(strict=True, made_up_field="some_other_field")],
+            name="annotated_logger.test_plugins",
+            config=False,
+        ).annotate_logs
+
+        wrapped = annotate_logs(_typing_self=False)(lambda: True)
+        wrapped()
+
+        assert annotated_logger_mock.records[0].failed_plugins == [
+            "<class 'annotated_logger.plugins.RenamerPlugin'>"
+        ]
+
+    def test_field_missing_not_strict(self, annotated_logger_mock):
+        annotate_logs = AnnotatedLogger(
+            plugins=[RenamerPlugin(made_up_field="some_other_field")],
+            name="annotated_logger.test_plugins",
+            config=False,
+        ).annotate_logs
+
+        wrapped = annotate_logs(_typing_self=False)(lambda: True)
+        wrapped()
+
+        record = annotated_logger_mock.records[0]
+        with pytest.raises(
+            AttributeError, match="'LogRecord' object has no attribute 'failed_plugins'"
+        ):
+            _ = record.failed_plugins
+
 
 class TestNestedRemoverPlugin:
     def test_exclude_nested_fields(self, annotated_logger_mock):
@@ -188,3 +234,26 @@ class TestNestedRemoverPlugin:
             present={"nested_extra": {"nested_key": {}}},
             count=1,
         )
+
+
+@pytest.mark.usefixtures("_reload_actions")
+class TestGitHubActionsPlugin:
+    def test_logs_normally(self, annotated_logger_mock):
+        action = ActionsExample()
+        action.first_step()
+
+        annotated_logger_mock.assert_logged("info", "Step 1 running!")
+
+    @pytest.mark.parametrize(
+        "annotated_logger_object", [logging.getLogger("annotated_logger.actions")]
+    )
+    def test_logs_actions_annotations(self, annotated_logger_mock):
+        action = ActionsExample()
+        action.first_step()
+        action.second_step()
+
+        assert (
+            "notice:: Step 1 running! - {'action': 'example.actions:ActionsExample.first_step'}"
+            in annotated_logger_mock.messages[0]
+        )
+        annotated_logger_mock.assert_logged("DEBUG", count=0)

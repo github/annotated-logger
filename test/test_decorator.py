@@ -1,18 +1,25 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 from pychoir.strings import StartsWith
 
+import example.api
+import example.calculator
+import example.default
 import test.demo
-from annotated_logger.mocks import AnnotatedLogMock
-from example.api import ApiClient
-from example.calculator import BoomError, Calculator, annotated_logger
-from example.default import DefaultExample, var_args_and_kwargs_provided_outer
+from annotated_logger.plugins import RuntimeAnnotationsPlugin
+
+if TYPE_CHECKING:
+    from annotated_logger.mocks import AnnotatedLogMock
 
 
-class TestAnnotatedLogger:
+@pytest.mark.usefixtures("_reload_calculator")
+class TestCalculatorExample:
     # Test logged exceptions with Calculator.divide()
-    #  def test_logged_exception(self, annotated_logger_mock):
     def test_logged_exception(self, annotated_logger_mock):
-        calc = Calculator(1, 0)
+        calc = example.calculator.Calculator(1, 0)
         with pytest.raises(ZeroDivisionError):
             calc.divide()
 
@@ -30,7 +37,7 @@ class TestAnnotatedLogger:
 
     # Test logged attributes with Calculator.add()
     def test_success_info_false(self, annotated_logger_mock):
-        calc = Calculator(6, 7)
+        calc = example.calculator.Calculator(6, 7)
         calc.add()
         annotated_logger_mock.assert_logged(
             "DEBUG",
@@ -47,7 +54,7 @@ class TestAnnotatedLogger:
         )
 
     def test_annotate_logger(self, annotated_logger_mock):
-        calc = Calculator(6, 7)
+        calc = example.calculator.Calculator(6, 7)
         calc.add()
         annotated_logger_mock.assert_logged(
             "DEBUG",
@@ -81,7 +88,7 @@ class TestAnnotatedLogger:
         )
 
     def test_can_provide_annotated_logger(self, annotated_logger_mock):
-        calc = Calculator(1, 5)
+        calc = example.calculator.Calculator(1, 5)
         answer = calc.power(2, 3)
         assert answer == 8
         annotated_logger_mock.assert_logged(
@@ -121,7 +128,7 @@ class TestAnnotatedLogger:
 
     # Test logger info call with Calculator.add()
     def test_info(self, annotated_logger_mock):
-        calc = Calculator(8, 9)
+        calc = example.calculator.Calculator(8, 9)
         calc.add()
         # This also tests the `annotate_logger` method
         annotated_logger_mock.assert_logged(
@@ -150,7 +157,7 @@ class TestAnnotatedLogger:
 
     # Test logger warn call with Calculator.divide()
     def test_warn(self, annotated_logger_mock):
-        calc = Calculator(10, 11)
+        calc = example.calculator.Calculator(10, 11)
         calc.divide()
 
         annotated_logger_mock.assert_logged(
@@ -165,7 +172,7 @@ class TestAnnotatedLogger:
 
     # Test logger error call with Calculator.add() with a bad value
     def test_error(self, annotated_logger_mock):
-        calc = Calculator(None, 2)  # pyright: ignore[reportArgumentType]
+        calc = example.calculator.Calculator(None, 2)  # pyright: ignore[reportArgumentType]
         calc.add()
         annotated_logger_mock.assert_logged(
             "ERROR",
@@ -181,7 +188,7 @@ class TestAnnotatedLogger:
 
     # Test logger exception call with Calculator.inverse()
     def test_exception(self, annotated_logger_mock):
-        Calculator(1, 11).inverse(0)
+        example.calculator.Calculator(1, 11).inverse(0)
         annotated_logger_mock.assert_logged(
             "ERROR",
             "Cannot divide by zero!",
@@ -194,7 +201,7 @@ class TestAnnotatedLogger:
 
     # Test logger debug call with Calculator.subtract()
     def test_debug(self, annotated_logger_mock):
-        calc = Calculator(12, 13)
+        calc = example.calculator.Calculator(12, 13)
         calc.subtract()
         annotated_logger_mock.assert_logged(
             "DEBUG",
@@ -209,9 +216,17 @@ class TestAnnotatedLogger:
     def test_runtime_not_cached(self, annotated_logger_mock, mocker):
         runtime_mock = mocker.Mock(name="runtime_not_cached")
         runtime_mock.side_effect = ["first", "second", "third", "fourth"]
-        runtime_annotations = annotated_logger.runtime_annotations
-        annotated_logger.runtime_annotations = {"runtime": runtime_mock}
-        calc = Calculator(12, 13)
+        plugin = next(
+            plugin
+            for plugin in example.calculator.annotated_logger.plugins
+            if isinstance(plugin, RuntimeAnnotationsPlugin)
+        )
+
+        runtime_annotations = plugin.runtime_annotations
+        plugin.runtime_annotations = {"runtime": runtime_mock}
+        # Need to use full path as that's what's reloaded. The other tests don't need
+        # to as they're not mocking the runtime annotations
+        calc = example.calculator.Calculator(12, 13)
         calc.subtract()
         annotated_logger_mock.assert_logged(
             "DEBUG",
@@ -231,15 +246,15 @@ class TestAnnotatedLogger:
                 "runtime": "second",
             },
         )
-        annotated_logger.runtime_annotations = runtime_annotations
+        plugin.runtime_annotations = runtime_annotations
 
     def test_raises_type_error_with_too_few_args(self):
-        calc = Calculator(12, 13)
+        calc = example.calculator.Calculator(12, 13)
         with pytest.raises(TypeError):
             calc.multiply()  # pyright: ignore[reportCallIssue]
 
     def test_raises_type_error_with_too_many_args(self):
-        calc = Calculator(12, 13)
+        calc = example.calculator.Calculator(12, 13)
         with pytest.raises(
             TypeError,
             match=r"^Calculator.subtract\(\) takes 1 positional argument but 2 were given$",
@@ -253,7 +268,7 @@ class TestAnnotatedLogger:
 
     # Test list instance in logger with Calculator.pemdas_example()
     def test_list(self, annotated_logger_mock):
-        calc = Calculator(12, 1)
+        calc = example.calculator.Calculator(12, 1)
         calc.pemdas_example()
         annotated_logger_mock.assert_logged(
             "INFO",
@@ -270,7 +285,7 @@ class TestAnnotatedLogger:
 
     # Test json formatter with Calculator.is_odd()
     def test_formatter(self, annotated_logger_mock):
-        Calculator(1, 9).is_odd(14)
+        example.calculator.Calculator(1, 9).is_odd(14)
         annotated_logger_mock.assert_logged(
             "INFO",
             "success",
@@ -285,7 +300,7 @@ class TestAnnotatedLogger:
 
     # Test logging via a log object created with logging.getflogger
     def test_getlogger_logger(self):
-        Calculator(1, 10).is_odd(14)
+        example.calculator.Calculator(1, 10).is_odd(14)
 
     def test_function_without_a_parameter(self, annotated_logger_mock):
         test.demo.function_without_parameters()
@@ -313,7 +328,7 @@ class TestAnnotatedLogger:
         )
 
     def test_iterator(self, annotated_logger_mock):
-        calc = Calculator(1, 0)
+        calc = example.calculator.Calculator(1, 0)
         value = calc.factorial(5)
         assert value == 120
         for i in [1, 2, 3, 4, 5]:
@@ -332,7 +347,7 @@ class TestAnnotatedLogger:
         "level", ["debug", "info", "warning", "error", "exception"]
     )
     def test_sensitive_iterator(self, annotated_logger_mock, level):
-        calc = Calculator(1, 0)
+        calc = example.calculator.Calculator(1, 0)
         value = calc.sensitive_factorial(5, level)
         five_factorial = 120
         assert value == five_factorial
@@ -349,22 +364,12 @@ class TestAnnotatedLogger:
             count=5,
         )
 
-    def test_no_annotations(self, annotated_logger_mock):
-        default = DefaultExample()
-        default.foo()
-        annotated_logger_mock.assert_logged(
-            "info",
-            "foo",
-            absent=annotated_logger_mock.ALL,
-            count=1,
-        )
-
     def test_logs_len_if_it_exists(self, annotated_logger_mock):
         class Weird:
             def __len__(self):
                 return 999
 
-        @annotated_logger.annotate_logs(_typing_self=False)
+        @example.calculator.annotated_logger.annotate_logs(_typing_self=False)
         def test_me():
             return Weird()
 
@@ -376,7 +381,7 @@ class TestAnnotatedLogger:
         )
 
     def test_classmethod(self, annotated_logger_mock):
-        assert Calculator.is_math_cool() is True
+        assert example.calculator.Calculator.is_math_cool() is True
         annotated_logger_mock.assert_logged(
             "INFO", "What a silly question!", absent=["sane", "source"]
         )
@@ -390,14 +395,14 @@ class TestAnnotatedLogger:
         )
 
     def test_pre_call(self, annotated_logger_mock):
-        calc = Calculator(5, 11)
+        calc = example.calculator.Calculator(5, 11)
         calc.divide()
         annotated_logger_mock.assert_logged(
             "DEBUG", "start", present={"will_crash": False}
         )
 
     def test_post_call(self, annotated_logger_mock):
-        calc = Calculator(5, 11)
+        calc = example.calculator.Calculator(5, 11)
         calc.divide()
         annotated_logger_mock.assert_logged(
             "info",
@@ -406,7 +411,7 @@ class TestAnnotatedLogger:
         )
 
     def test_post_call_exception(self, annotated_logger_mock):
-        calc = Calculator(5, 0)
+        calc = example.calculator.Calculator(5, 0)
         with pytest.raises(ZeroDivisionError):
             calc.divide()
         annotated_logger_mock.assert_logged(
@@ -416,9 +421,9 @@ class TestAnnotatedLogger:
         )
 
     def test_post_call_boom(self, annotated_logger_mock):
-        calc = Calculator(5, 0)
+        calc = example.calculator.Calculator(5, 0)
         calc.boom = True
-        with pytest.raises(BoomError):
+        with pytest.raises(example.calculator.BoomError):
             calc.multiply(1, 2)
         annotated_logger_mock.assert_logged(
             "warning",
@@ -445,7 +450,7 @@ class TestAnnotatedLogger:
         )
 
     def test_pre_call_boom(self, annotated_logger_mock):
-        calc = Calculator(5, 11)
+        calc = example.calculator.Calculator(5, 11)
         del calc.second
         with pytest.raises(AttributeError):
             calc.divide()
@@ -458,8 +463,91 @@ class TestAnnotatedLogger:
             },
         )
 
+    def test_args_kwargs_splat(self, annotated_logger_mock: AnnotatedLogMock):
+        default = example.default.DefaultExample()
+        default.var_args_and_kwargs(
+            "first", "arg0", "first_arg", kwarg1="kwarg1", kwarg2="second_kwarg"
+        )
+        annotated_logger_mock.assert_logged(
+            "info",
+            "success",
+            present={
+                "arg0": "arg0",
+                "arg1": "first_arg",
+                "kwarg1": "kwarg1",
+                "kwarg2": "second_kwarg",
+            },
+            count=1,
+        )
+
+    def test_positional_only(self, annotated_logger_mock: AnnotatedLogMock):
+        default = example.default.DefaultExample()
+        default.positional_only("first", _second="second")
+        annotated_logger_mock.assert_logged(
+            "info",
+            "success",
+            present={"first": "first", "second": "second"},
+            count=1,
+        )
+
+    def test_args_kwargs_splat_provided(self, annotated_logger_mock: AnnotatedLogMock):
+        default = example.default.DefaultExample()
+
+        default.var_args_and_kwargs_provided_outer(
+            "first", "arg0", "first_arg", kwarg1="kwarg1", kwarg2="second_kwarg"
+        )
+        annotated_logger_mock.assert_logged(
+            "info",
+            "success",
+            present={
+                "outer": True,
+                "subaction": "example.default:DefaultExample.var_args_and_kwargs_provided",
+                "arg0": "arg0",
+                "arg1": "first_arg",
+                "kwarg1": "kwarg1",
+                "kwarg2": "second_kwarg",
+            },
+            count=1,
+        )
+
+
+@pytest.mark.usefixtures("_reload_default")
+class TestDefaultExample:
+    def test_no_annotations(self, annotated_logger_mock):
+        default = example.default.DefaultExample()
+        default.foo()
+        annotated_logger_mock.assert_logged(
+            "info",
+            "foo",
+            absent=annotated_logger_mock.ALL,
+            count=1,
+        )
+
+    def test_args_splat(self, annotated_logger_mock: AnnotatedLogMock):
+        default = example.default.DefaultExample()
+        default.var_args("first", "arg0", "first_arg")
+        annotated_logger_mock.assert_logged(
+            "info",
+            "success",
+            present={"arg0": "arg0", "arg1": "first_arg"},
+            count=1,
+        )
+
+    def test_kwargs_splat(self, annotated_logger_mock: AnnotatedLogMock):
+        default = example.default.DefaultExample()
+        default.var_kwargs("first", kwarg1="kwarg1", kwarg2="second_kwarg")
+        annotated_logger_mock.assert_logged(
+            "info",
+            "success",
+            present={"kwarg1": "kwarg1", "kwarg2": "second_kwarg"},
+            count=1,
+        )
+
+
+@pytest.mark.usefixtures("_reload_api")
+class TestApiExample:
     def test_decorated_class(self, annotated_logger_mock: AnnotatedLogMock):
-        api = ApiClient()
+        api = example.api.ApiClient()
         annotated_logger_mock.assert_logged(
             "DEBUG",
             "init",
@@ -503,77 +591,10 @@ class TestAnnotatedLogger:
             absent=["valid", "args_length"],
         )
 
-    def test_args_splat(self, annotated_logger_mock: AnnotatedLogMock):
-        default = DefaultExample()
-        default.var_args("first", "arg0", "first_arg")
-        annotated_logger_mock.assert_logged(
-            "info",
-            "success",
-            present={"arg0": "arg0", "arg1": "first_arg"},
-            count=1,
-        )
-
-    def test_kwargs_splat(self, annotated_logger_mock: AnnotatedLogMock):
-        default = DefaultExample()
-        default.var_kwargs("first", kwarg1="kwarg1", kwarg2="second_kwarg")
-        annotated_logger_mock.assert_logged(
-            "info",
-            "success",
-            present={"kwarg1": "kwarg1", "kwarg2": "second_kwarg"},
-            count=1,
-        )
-
-    def test_args_kwargs_splat(self, annotated_logger_mock: AnnotatedLogMock):
-        default = DefaultExample()
-        default.var_args_and_kwargs(
-            "first", "arg0", "first_arg", kwarg1="kwarg1", kwarg2="second_kwarg"
-        )
-        annotated_logger_mock.assert_logged(
-            "info",
-            "success",
-            present={
-                "arg0": "arg0",
-                "arg1": "first_arg",
-                "kwarg1": "kwarg1",
-                "kwarg2": "second_kwarg",
-            },
-            count=1,
-        )
-
-    def test_positional_only(self, annotated_logger_mock: AnnotatedLogMock):
-        default = DefaultExample()
-        default.positional_only("first", _second="second")
-        annotated_logger_mock.assert_logged(
-            "info",
-            "success",
-            present={"first": "first", "second": "second"},
-            count=1,
-        )
-
-    def test_args_kwargs_splat_provided(self, annotated_logger_mock: AnnotatedLogMock):
-        default = DefaultExample()
-
-        default.var_args_and_kwargs_provided_outer(
-            "first", "arg0", "first_arg", kwarg1="kwarg1", kwarg2="second_kwarg"
-        )
-        annotated_logger_mock.assert_logged(
-            "info",
-            "success",
-            present={
-                "outer": True,
-                "subaction": "example.default:DefaultExample.var_args_and_kwargs_provided",
-                "arg0": "arg0",
-                "arg1": "first_arg",
-                "kwarg1": "kwarg1",
-                "kwarg2": "second_kwarg",
-            },
-            count=1,
-        )
-
     def test_args_kwargs_splat_provided_not_instance(
         self, annotated_logger_mock: AnnotatedLogMock
     ):
-        var_args_and_kwargs_provided_outer(
+        example.default.var_args_and_kwargs_provided_outer(
             "first", "arg0", "first_arg", kwarg1="kwarg1", kwarg2="second_kwarg"
         )
         annotated_logger_mock.assert_logged(
@@ -590,6 +611,8 @@ class TestAnnotatedLogger:
             count=1,
         )
 
+
+class TestNonClassBased:
     def test_annotated_logger_must_be_first(self):
         with pytest.raises(
             TypeError, match="^annotated_logger must be the first argument$"

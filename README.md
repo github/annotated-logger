@@ -1,7 +1,17 @@
 # Annotated Logger
+
+[contribution]: https://github.com/github/annotated-logger/blob/main/CONTRIBUTING.md
+
 [![Coverage badge](https://github.com/github/logger-decorator/raw/python-coverage-comment-action-data/badge.svg)](https://github.com/github/logger-decorator/tree/python-coverage-comment-action-data) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
 
 The `annotated-logger` package provides a decorator that can inject a annotatable logger object into a method or class. This logger object is a drop in replacement for `logging.logger` with additional functionality.
+
+## Background
+
+Annotated Logger is actively used by GitHub's Vulnerability Management team to help to easily add context to our logs in splunk. It is more or less feature complete for our current use cases, but we will add additional features/fixes as we discover a need for them. But, we'd love feature requests, bug report and or PRs for either (see our [contribution guidelines][contribution] for more information if you wish to contribute).
+
+## Requirements
+Annotated Logger is a Python package. It should work on any version of Python 3, but it is currently tested on 3.9 and higher.
 
 ## Usage
 
@@ -28,12 +38,13 @@ foo("this is the bar parameter")
 
 The example directory has a few files that exercise all of the features of the annotated-logger package. The `Calculator` class is the most fully featured example (but not a fully featured calculator :wink:). The `logging_config` example shows how to configure a logger via a dictConfig, like django uses. It also shows some of the interactions that can exist between a `logging` logger and an `annotated_logger` if `logging` is configured to use the annotated logger filter.
 
+## License
 
+This project is licensed under the terms of the MIT open source license. Please refer to MIT for the full terms.
 
-## Contributing
+## Maintainers
+This project is primarily maintained by `crimsonknave` on behalf of GitHub's Vulnerability Management team as it was initially developed for our internal use.
 
-Annotated Logger uses `ruff`, `pytest`, `pyright` and `mutmut` for testing and linting. It uses [`hatch`](https://github.com/pypa/hatch) as a project manager to build and install dependencies. When developing locally it's suggested that you ensure that your editor supports `ruff` and `pyright` for inline linting. The `pytest` test suite is very quick and should be run frequently. (`mutmut`)[https://github.com/boxed/mutmut] is a mutation testing tool and is fairly slow as it runs the other three tools hundreds of times after making minor tweaks to the code. It will typically be run only once development is complete to ensure everything is fully tested.
+## Support
 
-`script/mutmut_runner` is what `mutmut` uses to see if the mutation fails, however, it's also quite useful on it's own as it runs `ruff`, `pytest` and `pyright` exiting as soon as anything fails, so it makes a good sanity check.
-
-In addition to the tests and linting above all PRs will compare the version number in \_\_init\_\_.py with the version in `main` to ensure that new PRs results in new versions.
+Reported bugs will be addressed, pull requests are welcome, but there is limited bandwidth for work on new features.

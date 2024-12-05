@@ -7,6 +7,7 @@ from annotated_logger.plugins import (
     NameAdjusterPlugin,
     NestedRemoverPlugin,
     RemoverPlugin,
+    RuntimeAnnotationsPlugin,
 )
 
 
@@ -24,15 +25,15 @@ annotated_logger = AnnotatedLogger(
         "extra": "new data",
         "nested_extra": {"nested_key": {"double_nested_key": "value"}},
     },
-    runtime_annotations={"runtime": runtime},
     log_level=logging.DEBUG,
     plugins=[
         NameAdjusterPlugin(names=["joke"], prefix="cheezy_"),
         NameAdjusterPlugin(names=["power"], postfix="_overwhelming"),
         RemoverPlugin("taskName"),
         NestedRemoverPlugin(["double_nested_key"]),
+        RuntimeAnnotationsPlugin({"runtime": runtime}),
     ],
-    name="annotated_logger.example",
+    name="annotated_logger.calculator",
 )
 
 annotate_logs = annotated_logger.annotate_logs

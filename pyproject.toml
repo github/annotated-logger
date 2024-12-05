@@ -7,7 +7,7 @@ name = "annotated-logger"
 dynamic = ["version"]
 description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
 readme = "README.md"
-license = ""
+license = "MIT"
 requires-python = ">=3.6"
 authors = [
   { name = "Vuln Mgmt Eng", email = "security+vulnmgmteng@github.com" },
@@ -64,6 +64,7 @@ dependencies = [
   "pytest-freezer",
   "pytest-github-actions-annotate-failures",
   "pytest-mock",
+  "pytest-randomly",
   "requests-mock",
   "ruff",
   "typing_extensions",
@@ -91,7 +92,7 @@ reportMissingTypeArgument = true
 
 [tool.pytest.ini_options]
 # -p no:annotated_logger disables the plugin so that we can request it conftest.py
-# get coverage correctly, users will not have to do this.
+# to get coverage correctly, users will not have to do this.
 # See https://github.com/pytest-dev/pytest/issues/935
 addopts = "--cov=annotated_logger --cov=example --cov-report html --cov-report term -p no:annotated_logger"
 filterwarnings = [
