@@ -19,7 +19,7 @@ jobs:
 
       - name: Check for Changed Files
         id: changed-files
-        uses: tj-actions/changed-files@635f118699dd888d737c15018cd30aff2e0274f8
+        uses: tj-actions/changed-files@bab30c2299617f6615ec02a68b9a40d10bd21366
         with:
           files: |
             annotated_logger
@@ -29,7 +29,7 @@ jobs:
 
       - name: Log into registry
         if: steps.changed-files.outputs.any_changed == 'true'
-        uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
           registry: ghcr.io
           username: ${{ secrets.GHCR_USER }}
