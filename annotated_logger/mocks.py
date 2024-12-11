@@ -234,13 +234,13 @@ class AnnotatedLogMock(logging.Handler):
         assert_logged.check(self)
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotated_logger_object() -> logging.Logger:
     """Logger to wrap with the `annotated_logger_mock` fixture."""
     return logging.getLogger("annotated_logger")
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotated_logger_mock(annotated_logger_object: logging.Logger) -> AnnotatedLogMock:
     """Fixture for a mock of the annotated logger."""
     handler = annotated_logger_object.handlers[0]

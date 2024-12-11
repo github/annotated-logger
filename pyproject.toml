@@ -102,7 +102,6 @@ filterwarnings = [
 [tool.ruff]
 lint.select = ["ALL"]
 lint.ignore = [
-  "ANN101",
   "D100", "D104",
   # Disabled as they conflict with the formatter:
   "W191", "E111", "E114", "E117", "D206", "D300", "Q000", "Q001", "Q002", "Q003", "COM812", "COM819", "ISC001", "ISC002",
