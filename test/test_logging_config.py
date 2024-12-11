@@ -6,7 +6,7 @@ import example.logging_config
 from annotated_logger.mocks import AnnotatedLogMock
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotated_logger_object():
     return logging.getLogger("annotated_logger.logging_config")
 

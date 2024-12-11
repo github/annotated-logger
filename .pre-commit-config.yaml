@@ -1,14 +1,14 @@
 repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit
   # Ruff version.
-  rev: v0.5.7
+  rev: v0.8.2
   hooks:
   # Run the linter.
   - id: ruff
   # Run the formatter.
   - id: ruff-format
 - repo: https://github.com/RobertCraigie/pyright-python
-  rev: v1.1.382
+  rev: v1.1.390
   hooks:
   - id: pyright
     # I don't love having to specify these here, but pre-commit only seems to work
