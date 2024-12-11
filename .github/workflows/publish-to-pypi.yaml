@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/<package-name>  # Replace <package-name> with your PyPI project name
+      url: https://pypi.org/p/annotated-logger
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
@@ -100,7 +100,7 @@ jobs:
 
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/<package-name>
+      url: https://test.pypi.org/p/annotated-logger
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
