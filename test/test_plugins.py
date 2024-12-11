@@ -37,7 +37,7 @@ class SpyPlugin(BasePlugin):
         raise SpyPlugin.BoomError
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotated_logger(plugins):
     return AnnotatedLogger(
         plugins=plugins,
@@ -49,41 +49,41 @@ def annotated_logger(plugins):
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def plugins():
     return []
 
 
-@pytest.fixture()
+@pytest.fixture
 def annotate_logs(annotated_logger):
     return annotated_logger.annotate_logs
 
 
-@pytest.fixture()
+@pytest.fixture
 def broken_plugin():
     return SpyPlugin(working=False)
 
 
-@pytest.fixture()
+@pytest.fixture
 def working_plugin():
     return SpyPlugin(working=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def skip_plugin():
     return SpyPlugin(filter_message=True)
 
 
 # Request the annotated_logger fixture so that the config
 # has been setup before we get the logger
-@pytest.fixture()
+@pytest.fixture
 def annotated_logger_object(annotated_logger):  # noqa: ARG001
     return logging.getLogger("annotated_logger")
 
 
 class TestPlugins:
     class TestSkip:
-        @pytest.fixture()
+        @pytest.fixture
         def plugins(self, skip_plugin):
             return [skip_plugin]
 
@@ -99,7 +99,7 @@ class TestPlugins:
             assert annotated_logger_mock.records == []
 
     class TestWorking:
-        @pytest.fixture()
+        @pytest.fixture
         def plugins(self, working_plugin):
             return [working_plugin]
 
@@ -128,7 +128,7 @@ class TestPlugins:
             assert working_plugin.exception_triggered is True
 
     class TestBroken:
-        @pytest.fixture()
+        @pytest.fixture
         def plugins(self, broken_plugin, working_plugin):
             return [broken_plugin, working_plugin, broken_plugin]
 

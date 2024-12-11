@@ -16,7 +16,7 @@ import example.logging_config
 pytest_plugins = ["annotated_logger.mocks"]
 
 
-@pytest.fixture()
+@pytest.fixture
 def fail_mock(mocker):
     return mocker.patch("annotated_logger.mocks.pytest.fail")
 
@@ -27,26 +27,26 @@ def fail_mock(mocker):
 # logging config, as it gets clobbered by the most recently imported module
 # This is a more complete solution than using `pytest-forked` which only
 # fixed the issue if the test file didn't import more than one that conflicted
-@pytest.fixture()
+@pytest.fixture
 def _reload_api():
     importlib.reload(example.api)
 
 
-@pytest.fixture()
+@pytest.fixture
 def _reload_calculator():
     importlib.reload(example.calculator)
 
 
-@pytest.fixture()
+@pytest.fixture
 def _reload_default():
     importlib.reload(example.default)
 
 
-@pytest.fixture()
+@pytest.fixture
 def _reload_actions():
     importlib.reload(example.actions)
 
 
-@pytest.fixture()
+@pytest.fixture
 def _reload_logging_config():
     importlib.reload(example.logging_config)

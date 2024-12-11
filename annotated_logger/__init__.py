@@ -6,13 +6,13 @@ import logging
 import logging.config
 import time
 import uuid
+from collections.abc import Iterator
 from copy import copy, deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     Concatenate,
-    Iterator,
     Literal,
     ParamSpec,
     Protocol,
