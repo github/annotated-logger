@@ -29,6 +29,11 @@ from annotated_logger.plugins import BasePlugin
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import MutableMapping
 
+# Use 0.0.0.dev1 and so on when working in a PR
+# Each push attempts to upload to testpypi, but it only works with a unique version
+# https://test.pypi.org/project/annotated-logger/
+# The dev versions in testpypi can then be pulled in to whatever project needed
+# the new feature.
 VERSION = "1.2.1"  # pragma: no mutate
 
 T = TypeVar("T")
