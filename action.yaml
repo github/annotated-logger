@@ -1,6 +1,0 @@
-name: "Build Package"
-description: "Build the vulnerability-aggregator client python package"
-runs:
-  using: "docker"
-  image: "Dockerfile"
-  entrypoint: "/app/script/build_package"
