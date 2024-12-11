@@ -29,7 +29,7 @@ from annotated_logger.plugins import BasePlugin
 if TYPE_CHECKING:  # pragma: no cover
     from collections.abc import MutableMapping
 
-VERSION = "1.2.0"  # pragma: no mutate
+VERSION = "1.2.1"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
