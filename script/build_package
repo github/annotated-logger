@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -ex
-
-cd "$(dirname $0)/.."
-
-
-hatch build
-cp dist/* /github/workspace/dist
