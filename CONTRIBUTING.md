@@ -36,6 +36,15 @@ Here are a few things you can do that will increase the likelihood of your pull 
 - Keep your change as focused as possible. If there are multiple changes you would like to make that are not dependent upon each other, consider submitting them as separate pull requests.
 - Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 
+## Release a Version
+Releasing a version is as simple as creating and pushing a tag. A few rules are enforced for tags, the tag must be signed, they cannot be updated or deleted and `Coverage`, `pyright` and `ruff` must be passing (Coverage ensures the pytest matrix also passed).
+
+Simply run `git tag --sign v0.0.0` (inserting the correct version). Then, `git push origin v0.0.0`. CI will build, publish to Pypi and then create a GitHub Release with the artifacts.
+
+Technically, the tag name does not matter, it's not used for the version published, that pulls from `__init__.py`. But, it is how anyone will be able to browse the code at a particular version, so it should be set correctly.
+
+All commits pushed to the repo will also be built and pushed to testpypi. This CI job will fail if the version already exists there. During development set a version in the pattern of `0.0.0.dev0` and increment `dev0` for every new release you'd like to test externally. Then, you can [install the package from testpypi](https://packaging.python.org/en/latest/guides/using-testpypi/). Once the release is finalized, remove the `dev` from the version and ensure the version is updated following [semver](https://semver.org/) by bumping the major, minor or patch version as appropriate.
+
 ## Resources
 
 - [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/)
