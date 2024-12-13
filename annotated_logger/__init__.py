@@ -109,7 +109,7 @@ DEFAULT_LOGGING_CONFIG = {
     },
     "formatters": {
         "annotated_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",  # pragma: no mutate
+            "class": "pythonjsonlogger.json.JsonFormatter",  # pragma: no mutate
             "format": "{created} {levelname} {name} {message}",  # pragma: no mutate
             "style": "{",
         },

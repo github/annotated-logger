@@ -93,7 +93,7 @@ LOGGING = {
     },
     "formatters": {
         "logging_config.annotated_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "class": "pythonjsonlogger.json.JsonFormatter",
             # Note that this format string uses `time` which is set by the renamer
             # plugin. It also has `lvl` which is there strictly to test our fallback
             # to using `levelno` in the mocks to determine level.
@@ -116,7 +116,7 @@ LOGGING = {
             "style": "{",
         },
         "logging_config.weird_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "class": "pythonjsonlogger.json.JsonFormatter",
             "format": "{time} {lvl} {name} {message}",
             "style": "{",
         },
