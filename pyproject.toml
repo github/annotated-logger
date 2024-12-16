@@ -30,7 +30,7 @@ dependencies = [
 annotated_logger = "annotated_logger.mocks"
 
 [project.urls]
-Homepage = "https://github.com/github/annotated_logger"
+Homepage = "https://github.com/github/annotated-logger"
 
 [tool.hatch.version]
 path = "annotated_logger/__init__.py"
