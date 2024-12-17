@@ -34,7 +34,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # https://test.pypi.org/project/annotated-logger/
 # The dev versions in testpypi can then be pulled in to whatever project needed
 # the new feature.
-VERSION = "1.2.1"  # pragma: no mutate
+VERSION = "1.2.2"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -109,7 +109,7 @@ DEFAULT_LOGGING_CONFIG = {
     },
     "formatters": {
         "annotated_formatter": {
-            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",  # pragma: no mutate
+            "class": "pythonjsonlogger.json.JsonFormatter",  # pragma: no mutate
             "format": "{created} {levelname} {name} {message}",  # pragma: no mutate
             "style": "{",
         },

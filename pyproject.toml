@@ -19,7 +19,7 @@ keywords = [
 ]
 dependencies = [
   "makefun",
-  "python-json-logger",
+  "python-json-logger>=3.1.0",
   "requests",
   # The mock makes use of this, but we really should separate the mock out into it's own package
   # That would allow the mock to be included in dev, not in prod
