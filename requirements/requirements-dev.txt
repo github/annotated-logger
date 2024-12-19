@@ -20,7 +20,7 @@
 # - requests
 #
 
-certifi==2024.8.30
+certifi==2024.12.14
     # via requests
 cfgv==3.4.0
     # via pre-commit
@@ -46,7 +46,7 @@ idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
-junit-xml==1.8
+junit-xml==1.9
     # via mutmut
 linkify-it-py==2.0.3
     # via markdown-it-py
@@ -105,7 +105,7 @@ pytest-randomly==3.16.0
     # via hatch.envs.dev
 python-dateutil==2.9.0.post0
     # via freezegun
-python-json-logger==3.2.0
+python-json-logger==3.2.1
     # via hatch.envs.dev
 pyyaml==6.0.2
     # via pre-commit
