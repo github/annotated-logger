@@ -4,7 +4,7 @@
 
 [![Coverage badge](https://github.com/github/annotated-logger/raw/python-coverage-comment-action-data/badge.svg)](https://github.com/github/annotated-logger/tree/python-coverage-comment-action-data) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
 
-The `annotated-logger` package provides a decorator that can inject a annotatable logger object into a method or class. This logger object is a drop in replacement for `logging.logger` with additional functionality. You can read about the Annotated Logger in the [announcement blog post](https://github.blog/developer-skills/programming-languages-and-frameworks/introducing-annotated-logger-a-python-package-to-aid-in-adding-metadata-to-logs/).
+-The `annotated-logger` package provides a decorator that can inject an annotatable logger object into a method or class. This logger object is a drop in replacement for `logging.logger` with additional functionality. You can read about the Annotated Logger in the [announcement blog post](https://github.blog/developer-skills/programming-languages-and-frameworks/introducing-annotated-logger-a-python-package-to-aid-in-adding-metadata-to-logs/).
 
 ## Install
 
