@@ -24,11 +24,11 @@ certifi==2024.12.14
     # via requests
 cfgv==3.4.0
     # via pre-commit
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via mutmut
-coverage==7.6.9
+coverage==7.6.10
     # via
     #   hatch.envs.dev
     #   pytest-cov
@@ -40,7 +40,7 @@ filelock==3.16.1
     # via virtualenv
 freezegun==1.5.1
     # via pytest-freezer
-identify==2.6.3
+identify==2.6.5
     # via pre-commit
 idna==3.10
     # via requests
@@ -81,7 +81,7 @@ pre-commit==4.0.1
     # via hatch.envs.dev
 pychoir==0.0.27
     # via hatch.envs.dev
-pygments==2.18.0
+pygments==2.19.1
     # via rich
 pyright==1.1.391
     # via hatch.envs.dev
@@ -117,7 +117,7 @@ requests-mock==1.12.1
     # via hatch.envs.dev
 rich==13.9.4
     # via textual
-ruff==0.8.4
+ruff==0.8.6
     # via hatch.envs.dev
 setproctitle==1.3.4
     # via mutmut
@@ -143,5 +143,5 @@ uc-micro-py==1.0.3
     # via linkify-it-py
 urllib3==2.3.0
     # via requests
-virtualenv==20.28.0
+virtualenv==20.28.1
     # via pre-commit
