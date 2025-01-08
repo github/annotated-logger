@@ -46,7 +46,7 @@ idna==3.10
     # via requests
 iniconfig==2.0.0
     # via pytest
-junit-xml==1.8
+junit-xml==1.9
     # via mutmut
 linkify-it-py==2.0.3
     # via markdown-it-py
