@@ -17,7 +17,7 @@ jobs:
       actions: read
     steps:
     - name: Python Coverage Comment
-      uses: py-cov-action/python-coverage-comment-action@b2eb38dd175bf053189b35f738f9207278b00925
+      uses: py-cov-action/python-coverage-comment-action@d1ff8fbb5ff80feedb3faa0f6d7b424f417ad0e1
       with:
         GITHUB_TOKEN: ${{ github.token }}
         GITHUB_PR_RUN_ID: ${{ github.event.workflow_run.id }}
