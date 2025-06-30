@@ -109,7 +109,7 @@ python-json-logger==3.2.1
     # via hatch.envs.dev
 pyyaml==6.0.2
     # via pre-commit
-requests==2.32.3
+requests==2.32.4
     # via
     #   hatch.envs.dev
     #   requests-mock
