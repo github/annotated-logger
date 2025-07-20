@@ -7,17 +7,17 @@
 # - requests
 #
 
-certifi==2024.12.14
+certifi==2025.7.14
     # via requests
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
 idna==3.10
     # via requests
-makefun==1.15.6
+makefun==1.16.0
     # via hatch.envs.default
-pychoir==0.0.27
+pychoir==0.0.29
     # via hatch.envs.default
-python-json-logger==3.2.1
+python-json-logger==3.3.0
     # via hatch.envs.default
 requests==2.32.4
     # via hatch.envs.default
