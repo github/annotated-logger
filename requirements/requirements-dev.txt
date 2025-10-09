@@ -44,7 +44,7 @@ idna==3.10
     # via requests
 iniconfig==2.1.0
     # via pytest
-libcst==1.7.0
+libcst==1.8.5
     # via mutmut
 linkify-it-py==2.0.3
     # via markdown-it-py
