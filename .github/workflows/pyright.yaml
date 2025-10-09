@@ -12,9 +12,9 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -23,4 +23,4 @@ jobs:
         hatch env create dev
     - run: echo "$(hatch env find dev)/bin" >> $GITHUB_PATH
     - name: Run pyright
-      uses: jakebailey/pyright-action@b5d50e5cde6547546a5c4ac92e416a8c2c1a1dfe
+      uses: jakebailey/pyright-action@6cabc0f01c4994be48fd45cd9dbacdd6e1ee6e5e
