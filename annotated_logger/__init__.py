@@ -6,12 +6,11 @@ import logging
 import logging.config
 import time
 import uuid
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from copy import copy, deepcopy
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Concatenate,
     Literal,
     ParamSpec,
@@ -732,7 +731,7 @@ class AnnotatedLogger:
                         cls=wrapped, logger_base_name=logger_name
                     )
                     logger.debug("init")
-                    new = cast(AnnotatedClass[C_co], wrapped(*args, **kwargs))
+                    new = cast("AnnotatedClass[C_co]", wrapped(*args, **kwargs))
                     new.annotated_logger = logger
                     return new
 
@@ -766,7 +765,7 @@ class AnnotatedLogger:
                         post_call_attempted = True
                         _attempt_post_call(post_call, logger, *new_args, **new_kwargs)  # pyright: ignore[reportCallIssue]
                     end_time = time.perf_counter()
-                    logger.annotate(run_time=f"{end_time - start_time :.1f}")
+                    logger.annotate(run_time=f"{end_time - start_time:.1f}")
                     with contextlib.suppress(TypeError):
                         logger.annotate(count=len(result))  # pyright: ignore[reportArgumentType]
 
@@ -880,7 +879,7 @@ class AnnotatedLogger:
         else:
             instance = False  # pragma: no mutate
         logger, annotations = self._pick_correct_logger(
-            function, instance, logger_base_name=logger_base_name
+            function, instance=instance, logger_base_name=logger_base_name
         )
         if not provided:
             kwargs["annotated_logger"] = logger
@@ -904,7 +903,7 @@ class AnnotatedLogger:
         else:
             instance = False  # pragma: no mutate
         logger, annotations = self._pick_correct_logger(
-            function, instance, logger_base_name=logger_base_name
+            function, instance=instance, logger_base_name=logger_base_name
         )
         if not provided:
             args.insert(index, logger)
@@ -927,6 +926,7 @@ class AnnotatedLogger:
     def _pick_correct_logger(
         self,
         function: Function[S, P, R],
+        *,
         instance: object | bool,
         logger_base_name: str | None = None,
     ) -> tuple[AnnotatedAdapter, Annotations | None]:
