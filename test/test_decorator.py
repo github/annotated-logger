@@ -615,6 +615,6 @@ class TestApiExample:
 class TestNonClassBased:
     def test_annotated_logger_must_be_first(self):
         with pytest.raises(
-            TypeError, match="^annotated_logger must be the first argument$"
+            TypeError, match=r"^annotated_logger must be the first argument$"
         ):
-            import example.invalid_order  # noqa: F401
+            import example.invalid_order  # noqa: F401 PLC0415

@@ -58,7 +58,7 @@ Below is a list of the values for the selected extras for those failed matches.
     else:
         incorrect_string = ", ".join(
             [
-                f"\"Extra `{d['key']}` value is incorrect. Desired `{d['expected']}` ({type(d['expected'])}) , actual `{d['actual']}` ({type(d['actual'])})\""
+                f'"Extra `{d["key"]}` value is incorrect. Desired `{d["expected"]}` ({type(d["expected"])}) , actual `{d["actual"]}` ({type(d["actual"])})"'
                 for d in incorrect
             ]
         )

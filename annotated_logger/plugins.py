@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import contextlib
 import logging
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from requests.exceptions import HTTPError
 
 from annotated_logger.filter import AnnotatedFilter
 
 if TYPE_CHECKING:  # pragma: no cover
+    from collections.abc import Callable
+
     from annotated_logger import AnnotatedAdapter
 
 

@@ -132,6 +132,9 @@ dmypy.json
 .mutmut-cache
 html/
 
+# vim
+Session.vim
+
 # Misc
 TODO.md
 junit.xml
