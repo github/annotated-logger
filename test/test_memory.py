@@ -12,7 +12,9 @@ import example.default
 
 
 class TestMemory:
-    @pytest.mark.skipif(platform.system() == "Windows")
+    @pytest.mark.skipif(
+        platform.system() == "Windows", reason="Memray doesn't work on Windows."
+    )
     @pytest.mark.parametrize("denominator", [2, 0])
     @pytest.mark.limit_memory("10 MB")
     def test_repeated_calls_do_not_accumulate_memory(self, denominator):
