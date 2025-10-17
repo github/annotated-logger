@@ -63,7 +63,6 @@ dependencies = [
   "pytest-cov",
   "pytest-freezer",
   "pytest-github-actions-annotate-failures",
-  "pytest-memray",
   "pytest-mock",
   "pytest-randomly",
   "requests-mock",
