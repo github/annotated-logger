@@ -9,9 +9,9 @@
 
 certifi==2025.10.5
     # via requests
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via requests
-idna==3.10
+idna==3.11
     # via requests
 makefun==1.16.0
     # via hatch.envs.default
