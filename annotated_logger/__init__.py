@@ -788,6 +788,8 @@ class AnnotatedLogger:
                         _attempt_post_call(post_call, logger, *new_args, **new_kwargs)  # pyright: ignore[reportCallIssue]
                     raise
                 finally:
+                    # Remove the logger now that we are done with it,
+                    # otherwise they build up and eat memory
                     logging.root.manager.loggerDict.pop(logger.logger.name, None)
                 return result
 
