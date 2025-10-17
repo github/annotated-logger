@@ -148,7 +148,6 @@ class Calculator:
 
     @annotate_logs(success_info=False, _typing_requested=True)
     def add(self, annotated_logger: AnnotatedAdapter) -> Number:
-        #  def add(self, *args, annotated_logger: AnnotatedAdapter) -> Number:
         """Add self.first and self.second."""
         annotated_logger.annotate(first=self.first, second=self.second, foo="bar")
 
