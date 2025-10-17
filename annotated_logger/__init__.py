@@ -33,7 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # https://test.pypi.org/project/annotated-logger/
 # The dev versions in testpypi can then be pulled in to whatever project needed
 # the new feature.
-VERSION = "1.2.4"  # pragma: no mutate
+VERSION = "1.3.0"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -787,6 +787,7 @@ class AnnotatedLogger:
                     if post_call and not post_call_attempted:
                         _attempt_post_call(post_call, logger, *new_args, **new_kwargs)  # pyright: ignore[reportCallIssue]
                     raise
+                logging.root.manager.loggerDict.pop(logger.logger.name, None)
                 return result
 
             return wrap_function
