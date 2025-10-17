@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import logging
 
 import pytest
@@ -10,17 +11,21 @@ import example.default
 
 
 class TestMemory:
+    @pytest.mark.parametrize("denominator", [2, 0])
     @pytest.mark.limit_memory("10 MB")
-    def test_repeated_calls_do_not_accumulate_memory(self):
-        calc = example.calculator.Calculator(1, 2)
+    def test_repeated_calls_do_not_accumulate_memory(self, denominator):
+        calc = example.calculator.Calculator(1, denominator)
         for _ in range(10000):
-            calc.add()
+            with contextlib.suppress(ZeroDivisionError):
+                calc.divide()
 
-    def test_repeated_calls_do_not_accumulate_loggers(self):
-        calc = example.calculator.Calculator(1, 2)
+    @pytest.mark.parametrize("denominator", [2, 0])
+    def test_repeated_calls_do_not_accumulate_loggers(self, denominator):
+        calc = example.calculator.Calculator(1, denominator)
         starting_loggers = len(logging.root.manager.loggerDict)
         for _ in range(1000):
-            calc.add()
+            with contextlib.suppress(ZeroDivisionError):
+                calc.divide()
 
         ending_loggers = len(logging.root.manager.loggerDict)
         assert starting_loggers == ending_loggers
