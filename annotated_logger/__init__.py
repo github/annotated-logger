@@ -793,7 +793,6 @@ class AnnotatedLogger:
                     logging.root.manager.loggerDict.pop(logger.logger.name, None)
                     if not pre_execution_annotations:
                         logging.root.manager.loggerDict.pop(logger.logger.name, None)
-                    #  pass
                 return result
 
             return wrap_function
