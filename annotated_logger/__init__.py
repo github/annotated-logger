@@ -790,7 +790,6 @@ class AnnotatedLogger:
                 finally:
                     # Remove the logger now that we are done with it,
                     # otherwise they build up and eat memory
-                    logging.root.manager.loggerDict.pop(logger.logger.name, None)
                     if not pre_execution_annotations:
                         logging.root.manager.loggerDict.pop(logger.logger.name, None)
                 return result
