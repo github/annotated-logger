@@ -33,7 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # https://test.pypi.org/project/annotated-logger/
 # The dev versions in testpypi can then be pulled in to whatever project needed
 # the new feature.
-VERSION = "1.3.0"  # pragma: no mutate
+VERSION = "1.3.1"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -790,7 +790,8 @@ class AnnotatedLogger:
                 finally:
                     # Remove the logger now that we are done with it,
                     # otherwise they build up and eat memory
-                    logging.root.manager.loggerDict.pop(logger.logger.name, None)
+                    if not pre_execution_annotations:
+                        logging.root.manager.loggerDict.pop(logger.logger.name, None)
                 return result
 
             return wrap_function
