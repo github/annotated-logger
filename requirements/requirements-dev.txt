@@ -25,7 +25,7 @@ certifi==2025.10.5
     # via requests
 cfgv==3.4.0
     # via pre-commit
-charset-normalizer==3.4.3
+charset-normalizer==3.4.4
     # via requests
 click==8.3.0
     # via mutmut
@@ -41,13 +41,13 @@ freezegun==1.5.5
     # via pytest-freezer
 identify==2.6.15
     # via pre-commit
-idna==3.10
+idna==3.11
     # via requests
 iniconfig==2.1.0
     # via pytest
 jinja2==3.1.6
     # via memray
-libcst==1.7.0
+libcst==1.8.6
     # via mutmut
 linkify-it-py==2.0.3
     # via markdown-it-py
@@ -91,7 +91,7 @@ pygments==2.19.2
     #   pytest
     #   rich
     #   textual
-pyright==1.1.406
+pyright==1.1.407
     # via hatch.envs.dev
 pytest==8.4.2
     # via
@@ -133,13 +133,13 @@ rich==14.2.0
     # via
     #   memray
     #   textual
-ruff==0.14.0
+ruff==0.14.4
     # via hatch.envs.dev
 setproctitle==1.3.7
     # via mutmut
 six==1.17.0
     # via python-dateutil
-textual==6.2.1
+textual==6.5.0
     # via
     #   memray
     #   mutmut
@@ -152,5 +152,5 @@ uc-micro-py==1.0.3
     # via linkify-it-py
 urllib3==2.5.0
     # via requests
-virtualenv==20.34.0
+virtualenv==20.35.4
     # via pre-commit
