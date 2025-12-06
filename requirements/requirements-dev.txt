@@ -150,7 +150,7 @@ typing-extensions==4.15.0
     #   textual
 uc-micro-py==1.0.3
     # via linkify-it-py
-urllib3==2.5.0
+urllib3==2.6.0
     # via requests
 virtualenv==20.34.0
     # via pre-commit
