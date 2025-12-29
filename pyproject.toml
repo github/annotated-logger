@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A decorator that logs the start and end of a function as well as providing an optional logger with annotations"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.6"
+requires-python = ">=3.10"
 authors = [
   { name = "Vuln Mgmt Eng", email = "security+vulnmgmteng@github.com" },
 ]
@@ -56,7 +56,6 @@ installer = "uv"
 pip-compile-resolver = "uv"
 dependencies = [
   "coverage",
-  "mutmut",
   "pre-commit",
   "pyright",
   "pytest",
@@ -78,11 +77,6 @@ lint = "ruff check"
 [tool.coverage.report]
 exclude_also = ["@overload"]
 fail_under = 100
-
-[tool.mutmut]
-paths_to_mutate = "annotated_logger/"
-runner = "script/mutmut_runner"
-use_coverage = true
 
 [tool.pyright]
 include = ["annotated_logger", "example", "test"]
