@@ -27,7 +27,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
     - name: Install dependencies
       run: |
-        uv pip install hatch hatch-pip-compile
+        uv pip install --system hatch hatch-pip-compile
         hatch env create dev
     - name: Test with pytest
       run: |
