@@ -15,7 +15,7 @@
 Annotated Logger is actively used by GitHub's Vulnerability Management team to help to easily add context to our logs in splunk. It is more or less feature complete for our current use cases, but we will add additional features/fixes as we discover a need for them. But, we'd love feature requests, bug report and or PRs for either (see our [contribution guidelines][contribution] for more information if you wish to contribute).
 
 ## Requirements
-Annotated Logger is a Python package. It should work on any version of Python 3, but it is currently tested on 3.9 and higher.
+Annotated Logger is a Python package. It should work on any version of Python 3, but it is currently tested on 3.10 and higher.
 
 ## Usage
 
