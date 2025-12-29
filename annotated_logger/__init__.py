@@ -33,7 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # https://test.pypi.org/project/annotated-logger/
 # The dev versions in testpypi can then be pulled in to whatever project needed
 # the new feature.
-VERSION = "1.3.1"  # pragma: no mutate
+VERSION = "1.3.2"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
