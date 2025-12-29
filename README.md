@@ -4,7 +4,7 @@
 
 | Name                              |    Stmts |     Miss |    Cover |   Missing |
 |---------------------------------- | -------: | -------: | -------: | --------: |
-| annotated\_logger/\_\_init\_\_.py |      261 |        0 |     100% |           |
+| annotated\_logger/\_\_init\_\_.py |      262 |        0 |     100% |           |
 | annotated\_logger/filter.py       |       31 |        0 |     100% |           |
 | annotated\_logger/mocks.py        |      124 |        0 |     100% |           |
 | annotated\_logger/plugins.py      |       92 |        0 |     100% |           |
@@ -15,7 +15,7 @@
 | example/default.py                |       53 |        0 |     100% |           |
 | example/invalid\_order.py         |        5 |        0 |     100% |           |
 | example/logging\_config.py        |       37 |        0 |     100% |           |
-|                         **TOTAL** |  **768** |    **0** | **100%** |           |
+|                         **TOTAL** |  **769** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
