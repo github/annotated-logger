@@ -15,7 +15,7 @@
 | example/default.py                |       53 |        0 |     100% |           |
 | example/invalid\_order.py         |        5 |        0 |     100% |           |
 | example/logging\_config.py        |       37 |        0 |     100% |           |
-|                         **TOTAL** |  **769** |    **0** | **100%** |           |
+| **TOTAL**                         |  **769** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
