@@ -19,7 +19,7 @@
 # - requests
 #
 
-certifi==2025.11.12
+certifi==2026.1.4
     # via requests
 cfgv==3.5.0
     # via pre-commit
@@ -31,7 +31,7 @@ coverage==7.13.1
     #   pytest-cov
 distlib==0.4.0
     # via virtualenv
-filelock==3.20.1
+filelock==3.20.2
     # via virtualenv
 freezegun==1.5.5
     # via pytest-freezer
