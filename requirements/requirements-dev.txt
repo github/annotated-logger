@@ -101,7 +101,7 @@ typing-extensions==4.15.0
     # via
     #   hatch.envs.dev
     #   pyright
-urllib3==2.6.2
+urllib3==2.6.3
     # via requests
 virtualenv==20.35.4
     # via pre-commit
