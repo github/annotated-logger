@@ -57,9 +57,9 @@ pluggy==1.6.0
     #   pytest-cov
 pre-commit==4.5.1
     # via hatch.envs.dev
-pychoir==0.0.29
+pychoir==0.0.30
     # via hatch.envs.dev
-pygments==2.19.2
+pygments==2.20.0
     # via pytest
 pyright==1.1.408
     # via hatch.envs.dev
@@ -83,17 +83,17 @@ pytest-randomly==4.0.1
     # via hatch.envs.dev
 python-dateutil==2.9.0.post0
     # via freezegun
-python-json-logger==4.0.0
+python-json-logger==4.1.0
     # via hatch.envs.dev
 pyyaml==6.0.3
     # via pre-commit
-requests==2.32.5
+requests==2.33.0
     # via
     #   hatch.envs.dev
     #   requests-mock
 requests-mock==1.12.1
     # via hatch.envs.dev
-ruff==0.15.7
+ruff==0.15.8
     # via hatch.envs.dev
 six==1.17.0
     # via python-dateutil
