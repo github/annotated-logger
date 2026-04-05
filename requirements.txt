@@ -9,17 +9,17 @@
 
 certifi==2026.2.25
     # via requests
-charset-normalizer==3.4.6
+charset-normalizer==3.4.7
     # via requests
 idna==3.11
     # via requests
 makefun==1.16.0
     # via hatch.envs.default
-pychoir==0.0.29
+pychoir==0.0.30
     # via hatch.envs.default
-python-json-logger==4.0.0
+python-json-logger==4.1.0
     # via hatch.envs.default
-requests==2.32.5
+requests==2.33.1
     # via hatch.envs.default
 urllib3==2.6.3
     # via requests
