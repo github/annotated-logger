@@ -19,25 +19,25 @@
 # - requests
 #
 
-certifi==2026.5.20
+certifi==2026.6.17
     # via requests
 cfgv==3.5.0
     # via pre-commit
 charset-normalizer==3.4.7
     # via requests
-coverage==7.14.1
+coverage==7.14.2
     # via
     #   hatch.envs.dev
     #   pytest-cov
-distlib==0.4.0
+distlib==0.4.3
     # via virtualenv
-filelock==3.29.0
+filelock==3.29.4
     # via virtualenv
 freezegun==1.5.5
     # via pytest-freezer
 identify==2.6.19
     # via pre-commit
-idna==3.17
+idna==3.18
     # via requests
 iniconfig==2.3.0
     # via pytest
@@ -61,9 +61,9 @@ pychoir==0.0.30
     # via hatch.envs.dev
 pygments==2.20.0
     # via pytest
-pyright==1.1.409
+pyright==1.1.410
     # via hatch.envs.dev
-pytest==9.0.3
+pytest==9.1.1
     # via
     #   hatch.envs.dev
     #   pytest-cov
@@ -75,7 +75,7 @@ pytest-cov==7.1.0
     # via hatch.envs.dev
 pytest-freezer==0.4.9
     # via hatch.envs.dev
-pytest-github-actions-annotate-failures==0.4.0
+pytest-github-actions-annotate-failures==0.4.2
     # via hatch.envs.dev
 pytest-mock==3.15.1
     # via hatch.envs.dev
@@ -93,7 +93,7 @@ requests==2.34.2
     #   requests-mock
 requests-mock==1.12.1
     # via hatch.envs.dev
-ruff==0.15.15
+ruff==0.15.18
     # via hatch.envs.dev
 six==1.17.0
     # via python-dateutil
@@ -103,5 +103,5 @@ typing-extensions==4.15.0
     #   pyright
 urllib3==2.7.0
     # via requests
-virtualenv==21.4.2
+virtualenv==21.5.1
     # via pre-commit
