@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_70983d692f648185_actions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.3">coverage.py v7.14.3</a>,
-            created at 2026-07-14 17:58 +0000
+            created at 2026-07-16 19:12 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -106,7 +106,7 @@
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="key">def</span> <span class="nam">uncaught_exception</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="nam">self</span><span class="op">,</span> <span class="nam">exception</span><span class="op">:</span> <span class="nam">Exception</span><span class="op">,</span> <span class="nam">logger</span><span class="op">:</span> <span class="nam">AnnotatedAdapter</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">    <span class="op">)</span> <span class="op">-></span> <span class="nam">AnnotatedAdapter</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="str">"""Handle an uncaught excaption."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">        <span class="str">"""Handle an uncaught exception."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">        <span class="key">if</span> <span class="str">"success"</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">logger</span><span class="op">.</span><span class="nam">filter</span><span class="op">.</span><span class="nam">annotations</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t">            <span class="nam">logger</span><span class="op">.</span><span class="nam">annotate</span><span class="op">(</span><span class="nam">success</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">        <span class="key">if</span> <span class="str">"exception_title"</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">logger</span><span class="op">.</span><span class="nam">filter</span><span class="op">.</span><span class="nam">annotations</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -150,7 +150,7 @@
     <p class="pln"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">        <span class="str">"""Exception for a field that is supposed to be renamed, but is not present."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="op">*</span><span class="op">,</span> <span class="nam">strict</span><span class="op">:</span> <span class="nam">bool</span> <span class="op">=</span> <span class="key">False</span><span class="op">,</span> <span class="op">**</span><span class="nam">kwargs</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">        <span class="str">"""Store the list of names to rename and pre/post fixs."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">        <span class="str">"""Store the list of names to rename and pre/post fixes."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">targets</span> <span class="op">=</span> <span class="nam">kwargs</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">strict</span> <span class="op">=</span> <span class="nam">strict</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -186,7 +186,7 @@
     <p class="pln"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t">    <span class="str">"""Plugin that prevents name collisions with splunk field names."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span><span class="nam">self</span><span class="op">,</span> <span class="nam">names</span><span class="op">:</span> <span class="nam">list</span><span class="op">[</span><span class="nam">str</span><span class="op">]</span><span class="op">,</span> <span class="nam">prefix</span><span class="op">:</span> <span class="nam">str</span> <span class="op">=</span> <span class="str">""</span><span class="op">,</span> <span class="nam">postfix</span><span class="op">:</span> <span class="nam">str</span> <span class="op">=</span> <span class="str">""</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">        <span class="str">"""Store the list of names to rename and pre/post fixs."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t">        <span class="str">"""Store the list of names to rename and pre/post fixes."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">names</span> <span class="op">=</span> <span class="nam">names</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">prefix</span> <span class="op">=</span> <span class="nam">prefix</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">postfix</span> <span class="op">=</span> <span class="nam">postfix</span>&nbsp;</span><span class="r"></span></p>
@@ -299,7 +299,7 @@
             <a class="nav" href="z_70983d692f648185_actions_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.14.3">coverage.py v7.14.3</a>,
-            created at 2026-07-14 17:58 +0000
+            created at 2026-07-16 19:12 +0000
         </p>
     </div>
 </footer>
