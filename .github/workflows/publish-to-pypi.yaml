@@ -118,3 +118,9 @@ jobs:
       uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
       with:
         repository-url: https://test.pypi.org/legacy/
+        # This job runs on every push, but the project version only changes at
+        # release time, so most runs re-upload an already-published file and
+        # TestPyPI rejects it with "400 File already exists". Skip files that
+        # are already there instead of failing the build. Deliberately not set
+        # on the real PyPI job, where a duplicate upload should fail loudly.
+        skip-existing: true
