@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING
 
 import pytest
@@ -9,6 +10,8 @@ import example.api
 import example.calculator
 import example.default
 import test.demo
+from annotated_logger import AnnotatedAdapter, AnnotatedLogger
+from annotated_logger.filter import AnnotatedFilter
 from annotated_logger.plugins import RuntimeAnnotationsPlugin
 
 if TYPE_CHECKING:
@@ -618,3 +621,40 @@ class TestNonClassBased:
             TypeError, match=r"^annotated_logger must be the first argument$"
         ):
             import example.invalid_order  # noqa: F401 PLC0415
+
+
+def test_positional_only_logger():
+
+    @AnnotatedLogger().annotate_logs(_typing_self=False, _typing_requested=True)
+    def multiply(annotated_logger: AnnotatedAdapter, a: int, /, b: int = 4) -> int:
+        assert isinstance(annotated_logger, AnnotatedAdapter)
+        return a * b
+
+    assert multiply(3) == 12
+    assert multiply(3, b=5) == 15
+
+
+def test_positional_only_method_logger():
+
+    class Example:
+        @AnnotatedLogger().annotate_logs(_typing_self=True, _typing_requested=True)
+        def multiply(
+            self, annotated_logger: AnnotatedAdapter, a: int, /, b: int
+        ) -> int:
+            assert isinstance(annotated_logger, AnnotatedAdapter)
+            return a * b
+
+    assert Example().multiply(3, b=4) == 12
+
+
+def test_provided_positional_only_logger():
+
+    @AnnotatedLogger().annotate_logs(
+        _typing_self=False, _typing_requested=True, provided=True
+    )
+    def multiply(annotated_logger: AnnotatedAdapter, a: int, /, b: int) -> int:
+        assert annotated_logger is supplied
+        return a * b
+
+    supplied = AnnotatedAdapter(logging.getLogger(__name__), AnnotatedFilter())
+    assert multiply(supplied, 3, b=4) == 12
