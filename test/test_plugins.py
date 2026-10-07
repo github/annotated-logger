@@ -4,7 +4,7 @@ import pytest
 from requests.exceptions import HTTPError
 
 from annotated_logger import AnnotatedAdapter, AnnotatedLogger
-from annotated_logger.plugins import BasePlugin, RenamerPlugin
+from annotated_logger.plugins import BasePlugin, GitHubActionsPlugin, RenamerPlugin
 from example.actions import ActionsExample
 from example.api import ApiClient
 from example.calculator import Calculator
@@ -257,3 +257,24 @@ class TestGitHubActionsPlugin:
             in annotated_logger_mock.messages[0]
         )
         annotated_logger_mock.assert_logged("DEBUG", count=0)
+
+
+@pytest.mark.parametrize(
+    ("level", "command"),
+    [
+        (logging.DEBUG, "debug"),
+        (logging.INFO, "notice"),
+        (logging.WARNING, "warning"),
+        (logging.ERROR, "error"),
+        (logging.CRITICAL, "error"),
+    ],
+)
+def test_actions_workflow_command_format(level, command):
+    plugin = GitHubActionsPlugin(logging.DEBUG)
+    record = logging.LogRecord("actions", level, "", 0, "Build failed", (), None)
+    assert plugin.filter(record)
+    formatter = logging.Formatter(
+        "{github_annotation} {message} - {added_attributes}",
+        style="{",
+    )
+    assert formatter.format(record) == f"::{command}:: Build failed - {{}}"

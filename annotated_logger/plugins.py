@@ -168,7 +168,9 @@ class GitHubActionsPlugin(BasePlugin):
         name = record.levelname.lower()
         if name == "info":  # pragma: no cover
             name = "notice"
-        record.github_annotation = f"{name}::"
+        elif name == "critical":
+            name = "error"
+        record.github_annotation = f"::{name}::"
 
         return True
 
