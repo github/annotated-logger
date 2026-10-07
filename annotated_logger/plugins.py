@@ -76,8 +76,7 @@ class RenamerPlugin(BasePlugin):
         """Adjust the name of any fields that match a provided list if they exist."""
         for new, old in self.targets.items():
             if old in record.__dict__:
-                record.__dict__[new] = record.__dict__[old]
-                del record.__dict__[old]
+                record.__dict__[new] = record.__dict__.pop(old)
             elif self.strict:
                 raise RenamerPlugin.FieldNotPresentError(old)
         return True
