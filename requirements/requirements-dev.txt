@@ -31,7 +31,7 @@ coverage==7.16.2
     #   pytest-cov
 distlib==0.4.3
     # via virtualenv
-filelock==4.0.8
+filelock==4.0.12
     # via
     #   python-discovery
     #   virtualenv
@@ -41,7 +41,7 @@ identify==2.6.20
     # via pre-commit
 idna==3.20
     # via requests
-iniconfig==2.3.0
+iniconfig==2.3.1
     # via pytest
 makefun==1.16.0
     # via hatch.envs.dev
@@ -50,8 +50,10 @@ nodeenv==1.11.0
     #   pre-commit
     #   pyright
 packaging==26.3
-    # via pytest
-platformdirs==4.12.2
+    # via
+    #   pytest
+    #   virtualenv
+platformdirs==4.12.3
     # via virtualenv
 pluggy==1.6.0
     # via
@@ -107,5 +109,5 @@ typing-extensions==4.16.0
     #   pyright
 urllib3==2.8.0
     # via requests
-virtualenv==21.14.2
+virtualenv==21.14.5
     # via pre-commit
