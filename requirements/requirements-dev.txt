@@ -31,7 +31,7 @@ coverage==7.16.2
     #   pytest-cov
 distlib==0.4.3
     # via virtualenv
-filelock==4.0.12
+filelock==4.1.0
     # via
     #   python-discovery
     #   virtualenv
@@ -53,9 +53,9 @@ packaging==26.3
     # via
     #   pytest
     #   virtualenv
-platformdirs==4.12.3
+platformdirs==4.12.4
     # via virtualenv
-pluggy==1.6.0
+pluggy==1.7.0
     # via
     #   pytest
     #   pytest-cov
@@ -87,7 +87,7 @@ pytest-randomly==5.0.0
     # via hatch.envs.dev
 python-dateutil==2.9.0.post0
     # via freezegun
-python-discovery==1.6.1
+python-discovery==1.6.2
     # via virtualenv
 python-json-logger==4.2.0
     # via hatch.envs.dev
@@ -99,7 +99,7 @@ requests==2.34.2
     #   requests-mock
 requests-mock==1.12.1
     # via hatch.envs.dev
-ruff==0.16.10
+ruff==0.17.1
     # via hatch.envs.dev
 six==1.17.0
     # via python-dateutil
@@ -109,5 +109,5 @@ typing-extensions==4.16.0
     #   pyright
 urllib3==2.8.0
     # via requests
-virtualenv==21.14.5
+virtualenv==21.14.7
     # via pre-commit
