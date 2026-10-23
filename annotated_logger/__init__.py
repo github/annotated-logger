@@ -33,7 +33,7 @@ if TYPE_CHECKING:  # pragma: no cover
 # https://test.pypi.org/project/annotated-logger/
 # The dev versions in testpypi can then be pulled in to whatever project needed
 # the new feature.
-VERSION = "1.3.5"  # pragma: no mutate
+VERSION = "1.3.6"  # pragma: no mutate
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -836,7 +836,10 @@ class AnnotatedLogger:
                 )
                 return (args, kwargs, logger, None)
 
-            by_index = False  # pragma: no mutate
+            by_index = (
+                written_signature.parameters["annotated_logger"].kind
+                == inspect.Parameter.POSITIONAL_ONLY
+            )
             # Check for a var positional or positional only
             # If present that means we'll have values in args when invoking
             # but, if not everything will be in kwargs
