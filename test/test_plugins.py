@@ -183,6 +183,14 @@ class TestRequestsPlugin:
 
 
 class TestRenamerPlugin:
+    @pytest.mark.parametrize("strict", [False, True])
+    def test_identity_mapping_preserves_message(self, strict):
+        record = logging.makeLogRecord({"msg": "hello %s", "args": ("world",)})
+        plugin = RenamerPlugin(strict=strict, msg="msg")
+
+        assert plugin.filter(record)
+        assert record.getMessage() == "hello world"
+
     def test_joke_should_be_cheezy(self, annotated_logger_mock):
         calc = Calculator(1, 9)
         calc.divide()
