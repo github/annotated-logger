@@ -31,7 +31,7 @@ coverage==7.16.2
     #   pytest-cov
 distlib==0.4.3
     # via virtualenv
-filelock==4.0.12
+filelock==4.2.1
     # via
     #   python-discovery
     #   virtualenv
@@ -109,5 +109,5 @@ typing-extensions==4.16.0
     #   pyright
 urllib3==2.8.0
     # via requests
-virtualenv==21.14.5
+virtualenv==21.14.13
     # via pre-commit
