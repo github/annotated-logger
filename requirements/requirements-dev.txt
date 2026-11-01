@@ -19,7 +19,7 @@
 # - pychoir
 #
 
-certifi==2026.10.19
+certifi==2026.10.23
     # via requests
 cfgv==3.5.0
     # via pre-commit
@@ -29,9 +29,9 @@ coverage==7.16.2
     # via
     #   hatch.envs.dev
     #   pytest-cov
-distlib==0.4.3
+distlib==0.4.4
     # via virtualenv
-filelock==4.0.12
+filelock==4.1.0
     # via
     #   python-discovery
     #   virtualenv
@@ -45,7 +45,7 @@ iniconfig==2.3.1
     # via pytest
 makefun==1.16.0
     # via hatch.envs.dev
-nodeenv==1.11.0
+nodeenv==1.11.1
     # via
     #   pre-commit
     #   pyright
@@ -53,9 +53,9 @@ packaging==26.3
     # via
     #   pytest
     #   virtualenv
-platformdirs==4.12.3
+platformdirs==4.12.4
     # via virtualenv
-pluggy==1.6.0
+pluggy==1.7.0
     # via
     #   pytest
     #   pytest-cov
@@ -67,7 +67,7 @@ pygments==2.21.0
     # via pytest
 pyright==1.1.414
     # via hatch.envs.dev
-pytest==9.1.1
+pytest==9.2.0
     # via
     #   hatch.envs.dev
     #   pytest-cov
@@ -81,13 +81,13 @@ pytest-freezer==0.4.9
     # via hatch.envs.dev
 pytest-github-actions-annotate-failures==0.4.2
     # via hatch.envs.dev
-pytest-mock==3.16.0
+pytest-mock==3.17.0
     # via hatch.envs.dev
 pytest-randomly==5.0.0
     # via hatch.envs.dev
-python-dateutil==2.9.0.post0
+python-dateutil==3.0.0
     # via freezegun
-python-discovery==1.6.1
+python-discovery==1.6.7
     # via virtualenv
 python-json-logger==4.2.0
     # via hatch.envs.dev
@@ -99,7 +99,7 @@ requests==2.34.2
     #   requests-mock
 requests-mock==1.12.1
     # via hatch.envs.dev
-ruff==0.16.10
+ruff==0.17.3
     # via hatch.envs.dev
 six==1.17.0
     # via python-dateutil
@@ -109,5 +109,5 @@ typing-extensions==4.16.0
     #   pyright
 urllib3==2.8.0
     # via requests
-virtualenv==21.14.5
+virtualenv==21.15.1
     # via pre-commit
