@@ -111,7 +111,7 @@ LOGGING = {
             # for a more realistic example. Not all of the messages
             # in the method we set to use this are long enough to be split,
             # so, some of them don't have the message_part(s) fields.
-            #  "format": "{level} {message_part}/{message_parts} {message}",  # noqa: ERA001 E501
+            #  "format": "{level} {message_part}/{message_parts} {message}",  # noqa: ERA001
             #  "defaults": {"message_part": 1, "message_parts": 1},  # noqa: ERA001
             "style": "{",
         },

@@ -14,6 +14,8 @@ Please note that this project is released with a [Contributor Code of Conduct](C
 
 Annotated Logger uses `ruff`, `pytest`, `pyright` and `mutmut` for testing and linting. It uses [`hatch`](https://github.com/pypa/hatch) as a project manager to build and install dependencies. When developing locally it's suggested that you ensure that your editor supports `ruff` and `pyright` for inline linting. The `pytest` test suite is very quick and should be run frequently. (`mutmut`)[https://github.com/boxed/mutmut] is a mutation testing tool and is fairly slow as it runs the other three tools hundreds of times after making minor tweaks to the code. It will typically be run only once development is complete to ensure everything is fully tested.
 
+The published package supports Python 3.10 and newer, but the `dev` environment needs Python 3.11 or newer: its lockfile (`requirements/requirements-dev.txt`) pins `filelock` 4.2.1 or later for security fixes, and those releases no longer support 3.10.
+
 `script/mutmut_runner` is what `mutmut` uses to see if the mutation fails, however, it's also quite useful on it's own as it runs `ruff`, `pytest` and `pyright` exiting as soon as anything fails, so it makes a good sanity check.
 
 In addition to the tests and linting above all PRs will compare the version number in \_\_init\_\_.py with the version in `main` to ensure that new PRs results in new versions.
