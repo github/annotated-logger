@@ -45,7 +45,7 @@ iniconfig==2.3.1
     # via pytest
 makefun==1.16.0
     # via hatch.envs.dev
-nodeenv==1.11.1
+nodeenv==1.12.0
     # via
     #   pre-commit
     #   pyright
@@ -87,7 +87,7 @@ pytest-randomly==5.0.0
     # via hatch.envs.dev
 python-dateutil==3.0.0
     # via freezegun
-python-discovery==1.6.7
+python-discovery==1.9.1
     # via virtualenv
 python-json-logger==4.2.0
     # via hatch.envs.dev
@@ -111,5 +111,5 @@ tzdata==2026.6
     # via python-dateutil
 urllib3==2.8.0
     # via requests
-virtualenv==21.15.1
+virtualenv==21.15.2
     # via pre-commit
